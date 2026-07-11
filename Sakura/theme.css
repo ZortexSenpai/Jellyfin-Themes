@@ -329,6 +329,12 @@ a[is="emby-linkbutton"]:not(.raised):not(.navMenuOption),
     color: var(--text);
 }
 
+/* …and that stock gradient itself reads as a dark glow behind the title —
+   remove it too, so the title sits directly on the video */
+.skinHeader-withBackground.osdHeader {
+    background: none !important;
+}
+
 .pageTitle {
     color: var(--text);
     letter-spacing: 0.03em;
