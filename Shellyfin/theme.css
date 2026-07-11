@@ -171,9 +171,14 @@ a[is="emby-linkbutton"]:not(.raised):not(.navMenuOption),
    underneath, active tab in inverse video
    ========================================================================== */
 
-.skinHeader,
-.skinHeader-withBackground,
-.skinHeader.semiTransparent {
+/* The video player adds .osdHeader to this same header element and
+   paints its own fade-to-transparent gradient over the movie — it must
+   be excluded here, or the solid !important background (and the
+   phosphor hairline) would sit behind the title whenever the mouse
+   moves during playback */
+.skinHeader:not(.osdHeader),
+.skinHeader-withBackground:not(.osdHeader),
+.skinHeader.semiTransparent:not(.osdHeader) {
     background: var(--header-bg) !important;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
