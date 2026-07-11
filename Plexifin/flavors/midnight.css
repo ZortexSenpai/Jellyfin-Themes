@@ -1,0 +1,32 @@
+/* ============================================================================
+   PLEXIFIN FLAVOR — Midnight (deep blue-black)
+   ----------------------------------------------------------------------------
+   Darker than the base, with the violet cast traded for a cold navy
+   one and a steel-blue accent — late-night viewing without pure black.
+   Install (Dashboard → General → Custom CSS) — @import the base theme
+   and this file, in that order:
+       @import url("<where-you-host>/theme.css");
+       @import url("<where-you-host>/flavors/midnight.css");
+   …or paste this file below the full contents of theme.css. The flavor
+   must load AFTER the base so its :root wins. A flavor only re-points
+   the :root tokens; every layout and component rule lives in theme.css.
+   ========================================================================== */
+
+:root {
+    /* Accent — steel blue */
+    --accent:         #5b7fb9;
+    --accent-rgb:     91, 127, 185;
+    --accent-hover:   #7595c7;            /* steel, 15% toward white */
+    --accent-pressed: #4a6a9e;            /* steel, 15% toward black */
+    --on-accent:      #f2f6fc;
+
+    /* Neutrals — navy-cast near-black */
+    --bg:             #0c101a;
+    --bg-rgb:         12, 16, 26;
+    --surface:        #131926;
+    --surface-high:   #1c2436;
+
+    /* Text */
+    --text:           #e8edf5;
+    --text-muted:     #8794a8;
+}

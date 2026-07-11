@@ -4,7 +4,7 @@ A collection of custom CSS themes (skins) for the [Jellyfin](https://jellyfin.or
 
 | Theme | Description | Flavors |
 |---|---|---|
-| [**Plexifin**](Plexifin/) | A Plex-style skin — one flat background plane, dark lavender accent | Catppuccin: Latte, Frappé, Macchiato, Mocha |
+| [**Plexifin**](Plexifin/) | A Plex-style skin — one flat background plane, dark lavender accent | Catppuccin: Latte, Frappé, Macchiato, Mocha · Dark: OLED, Midnight, Graphite, Plex Amber |
 | [**Shellyfin**](Shellyfin/) | A terminal (CLI) skin — monospace type, phosphor glow, CRT scanlines | Amber (VT220), Violet, Ice, Mono |
 | [**Samurai**](Samurai/) | A feudal-Japan skin — sumi-ink lacquer, vermillion accent, gold trim, mincho serif type | Aiiro (indigo), Sakura, Matcha, Kogane (gold) |
 | [**Sakura**](Sakura/) | A night cherry-blossom skin — plum-dark sky, blossom-pink accent, falling petal silhouettes, rounded webfonts, blossom icons | Seasonal flowers: Ume, Fuji, Ajisai, Momiji |
@@ -70,6 +70,10 @@ Each theme ships optional color flavors in its `flavors/` folder. A flavor only 
 | Catppuccin Frappé | `Plexifin/flavors/catppuccin-frappe.css` |
 | Catppuccin Macchiato | `Plexifin/flavors/catppuccin-macchiato.css` |
 | Catppuccin Mocha | `Plexifin/flavors/catppuccin-mocha.css` |
+| OLED — true black, for OLED screens | `Plexifin/flavors/oled.css` |
+| Midnight — deep blue-black, steel accent | `Plexifin/flavors/midnight.css` |
+| Graphite — neutral dark gray, silver accent | `Plexifin/flavors/graphite.css` |
+| Plex Amber — charcoal + Plex's gold accent | `Plexifin/flavors/plex-amber.css` |
 
 **Shellyfin** (`Shellyfin/flavors/`)
 

@@ -1,0 +1,33 @@
+/* ============================================================================
+   PLEXIFIN FLAVOR — OLED (true black)
+   ----------------------------------------------------------------------------
+   Pure #000 background for OLED screens and dark rooms — dialogs and
+   cards keep a hint of surface so elevation still reads. The lavender
+   accent shifts one step lighter to hold contrast on true black.
+   Install (Dashboard → General → Custom CSS) — @import the base theme
+   and this file, in that order:
+       @import url("<where-you-host>/theme.css");
+       @import url("<where-you-host>/flavors/oled.css");
+   …or paste this file below the full contents of theme.css. The flavor
+   must load AFTER the base so its :root wins. A flavor only re-points
+   the :root tokens; every layout and component rule lives in theme.css.
+   ========================================================================== */
+
+:root {
+    /* Accent — the base theme's lavender, one step lighter for black */
+    --accent:         #8a67ad;
+    --accent-rgb:     138, 103, 173;
+    --accent-hover:   #a183c0;            /* lavender, 15% toward white */
+    --accent-pressed: #734f96;            /* the base accent */
+    --on-accent:      #ffffff;
+
+    /* Neutrals — true black plane, faint surfaces for elevation */
+    --bg:             #000000;
+    --bg-rgb:         0, 0, 0;
+    --surface:        #101014;
+    --surface-high:   #1a1a20;
+
+    /* Text */
+    --text:           #eceef2;
+    --text-muted:     #8f95a3;
+}

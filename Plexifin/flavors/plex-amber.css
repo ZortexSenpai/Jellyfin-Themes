@@ -1,0 +1,33 @@
+/* ============================================================================
+   PLEXIFIN FLAVOR — Plex Amber
+   ----------------------------------------------------------------------------
+   The most Plex a Plex-style skin can get: warm near-black charcoal,
+   darker than the base, with Plex's own amber-gold accent (#e5a00d).
+   Text on the amber flips dark, like Plex's play button.
+   Install (Dashboard → General → Custom CSS) — @import the base theme
+   and this file, in that order:
+       @import url("<where-you-host>/theme.css");
+       @import url("<where-you-host>/flavors/plex-amber.css");
+   …or paste this file below the full contents of theme.css. The flavor
+   must load AFTER the base so its :root wins. A flavor only re-points
+   the :root tokens; every layout and component rule lives in theme.css.
+   ========================================================================== */
+
+:root {
+    /* Accent — Plex amber */
+    --accent:         #e5a00d;
+    --accent-rgb:     229, 160, 13;
+    --accent-hover:   #ecb43d;            /* amber, 15% toward white */
+    --accent-pressed: #c4890b;            /* amber, 15% toward black */
+    --on-accent:      #1a1200;
+
+    /* Neutrals — warm charcoal, darker than the base ramp */
+    --bg:             #141517;
+    --bg-rgb:         20, 21, 23;
+    --surface:        #1d1f23;
+    --surface-high:   #282b31;
+
+    /* Text */
+    --text:           #eff0f2;
+    --text-muted:     #969ba5;
+}

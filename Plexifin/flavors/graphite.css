@@ -1,0 +1,33 @@
+/* ============================================================================
+   PLEXIFIN FLAVOR — Graphite (neutral dark gray)
+   ----------------------------------------------------------------------------
+   Darker than the base and completely desaturated: no violet cast, no
+   colored accent — just graphite grays and a polished-silver accent,
+   like a monochrome hi-fi component.
+   Install (Dashboard → General → Custom CSS) — @import the base theme
+   and this file, in that order:
+       @import url("<where-you-host>/theme.css");
+       @import url("<where-you-host>/flavors/graphite.css");
+   …or paste this file below the full contents of theme.css. The flavor
+   must load AFTER the base so its :root wins. A flavor only re-points
+   the :root tokens; every layout and component rule lives in theme.css.
+   ========================================================================== */
+
+:root {
+    /* Accent — polished silver; text on it flips dark */
+    --accent:         #a8adb8;
+    --accent-rgb:     168, 173, 184;
+    --accent-hover:   #bcc1cb;            /* silver, 15% toward white */
+    --accent-pressed: #8f94a0;            /* silver, 15% toward black */
+    --on-accent:      #16171a;
+
+    /* Neutrals — pure neutral ramp, no cast */
+    --bg:             #121316;
+    --bg-rgb:         18, 19, 22;
+    --surface:        #1b1c20;
+    --surface-high:   #26272d;
+
+    /* Text */
+    --text:           #e9eaee;
+    --text-muted:     #9094a0;
+}
