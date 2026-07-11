@@ -7,7 +7,7 @@ A collection of custom CSS themes (skins) for the [Jellyfin](https://jellyfin.or
 | [**Plexifin**](Plexifin/) | A Plex-style skin — one flat background plane, dark lavender accent | Catppuccin: Latte, Frappé, Macchiato, Mocha |
 | [**Shellyfin**](Shellyfin/) | A terminal (CLI) skin — monospace type, phosphor glow, CRT scanlines | Amber (VT220), Violet, Ice, Mono |
 | [**Samurai**](Samurai/) | A feudal-Japan skin — sumi-ink lacquer, vermillion accent, gold trim, mincho serif type | Aiiro (indigo), Sakura, Matcha, Kogane (gold) |
-| [**Sakura**](Sakura/) | A night cherry-blossom skin — plum-dark sky, blossom-pink accent, falling petals | Seasonal flowers: Ume, Fuji, Ajisai, Momiji |
+| [**Sakura**](Sakura/) | A night cherry-blossom skin — plum-dark sky, blossom-pink accent, falling petal silhouettes, rounded webfonts, blossom icons | Seasonal flowers: Ume, Fuji, Ajisai, Momiji |
 
 Tested against the Jellyfin **10.10 / 10.11** web client. Set your display theme to **Dark** in Jellyfin (Settings → Display) for best results.
 
@@ -110,7 +110,7 @@ Shellyfin quick dials: set `--scanline-opacity: 0` to disable the CRT scanline e
 
 Samurai quick dials: set `--pattern-opacity: 0` to disable the seigaiha wave overlay, and `--seal` to change the character stamped on the login scroll (default `"侍"`; `""` removes it).
 
-Sakura quick dials: set `--petal-opacity: 0` to disable the falling petals (they also pause automatically for users who prefer reduced motion, and hide during video playback).
+Sakura quick dials: set `--petal-opacity: 0` to disable the falling petals (all decorative animation also pauses automatically for users who prefer reduced motion, and the petals hide during video playback). Fonts (Zen Maru Gothic body, Shippori Mincho titles) load from Google Fonts — offline servers silently fall back to system fonts.
 
 ## Note on caching
 

@@ -9,8 +9,16 @@
    detail pages, episode grid, themed dashboard, centered login) — dressed
    for blossom viewing at night: a plum-dark sky, soft sakura-pink accent,
    petal-round pills and corners, mincho serif display titles marked with
-   a ❀ blossom, moon-gold star ratings, and petals drifting gently down
-   the whole UI (they pause for videos and for reduced-motion users).
+   a glowing ❀, moon-gold star ratings, and true petal silhouettes — with
+   the odd full blossom and a little out-of-focus bokeh — drifting and
+   swaying down the whole UI (they pause for videos and for
+   reduced-motion users).
+
+   Type is Zen Maru Gothic (rounded body) with Shippori Mincho display
+   titles, loaded from Google Fonts — offline servers silently fall back
+   to system fonts. Rating stars and the player's buffering spinner are
+   re-contented into blossoms; the login wordmark carries a slow
+   moon-gold shimmer.
 
    All colors are configured in the :root block directly below. Quick
    dials: --petal-opacity: 0 kills the falling petals, --radius /
@@ -21,6 +29,12 @@
    flavor second) or paste the flavor below this whole file. See
    README.md.
    ========================================================================== */
+
+/* Webfonts — Zen Maru Gothic (rounded body) and Shippori Mincho (display
+   serif). An @import must sit before every other rule to be valid; if
+   the fonts can't load (offline server, blocked CDN) the stacks in
+   :root fall back to system fonts and nothing else breaks. */
+@import url("https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap");
 
 :root {
     /* ------------------------------------------------------------------
@@ -69,10 +83,22 @@
        BLOSSOM DRESSING
        ------------------------------------------------------------------ */
     --font-display:
-        "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP",
-        "Noto Serif CJK JP", "Source Han Serif JP", Georgia,
-        "Times New Roman", serif; /* titles only — body text stays sans */
-    --petal-opacity: 0.4; /* falling petals; 0 disables */
+        "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho",
+        "Noto Serif JP", "Noto Serif CJK JP", "Source Han Serif JP",
+        Georgia, "Times New Roman", serif; /* the big type */
+    --font-body:
+        "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "M PLUS Rounded 1c",
+        "Hiragino Kaku Gothic ProN", "Noto Sans JP", system-ui, sans-serif;
+    --petal-opacity: 0.5; /* falling petals (behind the UI); 0 disables */
+
+    /* Petal silhouettes for the falling-petal overlay (section 1): two
+       repeating SVG tiles — one of scattered single petals, one adding
+       a full five-petal blossom. The shapes are WHITE because they are
+       used as mask layers; the pink comes from the overlay's
+       background-color, so flavors re-dye the petals automatically.
+       Inlined as data URIs to keep the theme a single file. */
+    --petal-tile-a: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 320'%3E%3Cpath d='M0 -7 C 2.8 -4.6 4.6 -1.6 4 1.8 C 3.4 4.8 1.6 7 0 7 C -1.6 7 -3.4 4.8 -4 1.8 C -4.6 -1.6 -2.8 -4.6 0 -7 Z' transform='translate(48 54) rotate(40)' fill='%23fff' fill-opacity='.9'/%3E%3Cpath d='M0 -7 C 2.8 -4.6 4.6 -1.6 4 1.8 C 3.4 4.8 1.6 7 0 7 C -1.6 7 -3.4 4.8 -4 1.8 C -4.6 -1.6 -2.8 -4.6 0 -7 Z' transform='translate(150 140) rotate(-25) scale(.8)' fill='%23fff' fill-opacity='.7'/%3E%3Cpath d='M0 -7 C 2.8 -4.6 4.6 -1.6 4 1.8 C 3.4 4.8 1.6 7 0 7 C -1.6 7 -3.4 4.8 -4 1.8 C -4.6 -1.6 -2.8 -4.6 0 -7 Z' transform='translate(86 238) rotate(105) scale(.9)' fill='%23fff' fill-opacity='.8'/%3E%3Cpath d='M0 -7 C 2.8 -4.6 4.6 -1.6 4 1.8 C 3.4 4.8 1.6 7 0 7 C -1.6 7 -3.4 4.8 -4 1.8 C -4.6 -1.6 -2.8 -4.6 0 -7 Z' transform='translate(204 286) rotate(-70) scale(.65)' fill='%23fff' fill-opacity='.55'/%3E%3C/svg%3E");
+    --petal-tile-b: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 440'%3E%3Cpath d='M0 -7 C 2.8 -4.6 4.6 -1.6 4 1.8 C 3.4 4.8 1.6 7 0 7 C -1.6 7 -3.4 4.8 -4 1.8 C -4.6 -1.6 -2.8 -4.6 0 -7 Z' transform='translate(70 90) rotate(-50) scale(.9)' fill='%23fff' fill-opacity='.75'/%3E%3Cpath d='M0 -7 C 2.8 -4.6 4.6 -1.6 4 1.8 C 3.4 4.8 1.6 7 0 7 C -1.6 7 -3.4 4.8 -4 1.8 C -4.6 -1.6 -2.8 -4.6 0 -7 Z' transform='translate(250 330) rotate(20) scale(.7)' fill='%23fff' fill-opacity='.6'/%3E%3Cg fill='%23fff' fill-opacity='.5' transform='translate(170 210)'%3E%3Ccircle cy='-6.5' r='5.5'/%3E%3Ccircle cx='-6.2' cy='-2' r='5.5'/%3E%3Ccircle cx='-3.8' cy='5.3' r='5.5'/%3E%3Ccircle cx='3.8' cy='5.3' r='5.5'/%3E%3Ccircle cx='6.2' cy='-2' r='5.5'/%3E%3C/g%3E%3C/svg%3E");
 
     /* ------------------------------------------------------------------
        SHAPE & LAYOUT — petal-soft
@@ -105,14 +131,21 @@ html {
     color: var(--text);
 }
 
-/* Display serif on the big type only; everything else keeps the stock
-   sans so body copy stays crisp at small sizes */
+/* The rounded body font, everywhere — EXCEPT the icon font, whose glyphs
+   are ligature names rendered through "Material Icons" and would
+   otherwise appear as literal text */
+*:not(.material-icons) {
+    font-family: var(--font-body) !important;
+}
+
+/* Display serif on the big type (!important to outrank the universal
+   body-font rule above — importance beats specificity) */
 .pageTitle,
 .sectionTitle,
 .itemName,
 .parentName,
 .formDialogHeaderTitle {
-    font-family: var(--font-display);
+    font-family: var(--font-display) !important;
 }
 
 .backgroundContainer {
@@ -127,83 +160,142 @@ html {
     ) !important;
 }
 
-/* Falling petals across the whole UI (set --petal-opacity: 0 to turn
-   off). Five repeating layers, one petal per tile, each layer drifting
-   at its own speed and sideways direction; every keyframe offset is an
-   exact multiple of that layer's tile size, so the loop is seamless.
-   The petals are tinted from --accent-rgb — flavors re-dye them
-   automatically. Fixed, click-through, and removed while a video plays
-   (body.hide-scroll) so the movie itself stays clean; the drift pauses
-   for users who prefer reduced motion. */
-body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 99999;
-    pointer-events: none;
-    opacity: var(--petal-opacity);
-    background-image:
-        radial-gradient(
-            6px 5px at 40px 60px,
-            rgba(var(--accent-rgb), 0.9) 40%,
-            rgba(var(--accent-rgb), 0) 70%
-        ),
-        radial-gradient(
-            4px 3px at 120px 30px,
-            rgba(var(--accent-rgb), 0.7) 40%,
-            rgba(var(--accent-rgb), 0) 70%
-        ),
-        radial-gradient(
-            5px 4px at 200px 90px,
-            rgba(var(--accent-rgb), 0.8) 40%,
-            rgba(var(--accent-rgb), 0) 70%
-        ),
-        radial-gradient(
-            3px 2.5px at 70px 10px,
-            rgba(var(--accent-rgb), 0.6) 40%,
-            rgba(var(--accent-rgb), 0) 70%
-        ),
-        radial-gradient(
-            14px 12px at 160px 50px,
-            rgba(var(--accent-rgb), 0.25) 0%,
-            rgba(var(--accent-rgb), 0) 60%
-        );
-    background-size:
-        260px 340px,
-        300px 420px,
-        340px 380px,
-        220px 300px,
-        420px 560px;
-    animation: sakura-fall 90s linear infinite;
+/* Falling petals in the night sky BEHIND the interface (set
+   --petal-opacity: 0 to turn off). They are drawn on Jellyfin's fixed
+   background plane (.backgroundContainer), which every page renders
+   transparently on top of — so the petals drift through the empty sky
+   between cards but never cover artwork, text or menus (opaque areas
+   like the pinned sidebar and header simply occlude them). The petal
+   SHAPES live in two SVG tiles (--petal-tile-a/b in :root) used as
+   mask layers — the white shapes cut petal-shaped windows into a
+   plane of --accent-hover, so they render as clean silhouettes AND
+   track the flavor's accent automatically. A third mask layer (a soft
+   gradient dot) adds out-of-focus bokeh. Every keyframe offset is an
+   exact multiple of that layer's tile size, so the drift loops
+   seamlessly, and the whole layer sways gently from side to side (it
+   is oversized by more than the sway distance so no edge ever peeks
+   in). Click-through, removed while a video plays (body.hide-scroll),
+   stilled for reduced-motion users, and skipped entirely on browsers
+   without mask support. */
+@supports ((-webkit-mask-image: url("")) or (mask-image: url(""))) {
+    .backgroundContainer::after {
+        content: "";
+        position: absolute;
+        inset: -24px;
+        pointer-events: none;
+        opacity: var(--petal-opacity);
+        background-color: var(--accent-hover);
+        -webkit-mask-image:
+            var(--petal-tile-a),
+            var(--petal-tile-b),
+            radial-gradient(
+                9px 8px at 210px 160px,
+                rgba(255, 255, 255, 0.5) 0 45%,
+                rgba(255, 255, 255, 0) 75%
+            );
+        mask-image:
+            var(--petal-tile-a),
+            var(--petal-tile-b),
+            radial-gradient(
+                9px 8px at 210px 160px,
+                rgba(255, 255, 255, 0.5) 0 45%,
+                rgba(255, 255, 255, 0) 75%
+            );
+        -webkit-mask-size:
+            240px 320px,
+            320px 440px,
+            420px 560px;
+        mask-size:
+            240px 320px,
+            320px 440px,
+            420px 560px;
+        animation:
+            sakura-fall 90s linear infinite,
+            sakura-sway 13s ease-in-out infinite alternate;
+    }
+
+    body.hide-scroll .backgroundContainer::after {
+        display: none;
+    }
 }
 
 @keyframes sakura-fall {
     from {
-        background-position:
+        -webkit-mask-position:
             0 0,
             0 0,
+            0 0;
+        mask-position:
             0 0,
             0 0,
             0 0;
     }
     to {
-        background-position:
-            260px 680px,
-            -300px 840px,
-            340px 1140px,
-            -220px 600px,
+        -webkit-mask-position:
+            240px 640px,
+            -320px 440px,
+            420px 1120px;
+        mask-position:
+            240px 640px,
+            -320px 440px,
             420px 1120px;
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
-    body::after {
-        animation: none;
+@keyframes sakura-sway {
+    from {
+        transform: translateX(-12px);
+    }
+    to {
+        transform: translateX(12px);
     }
 }
 
-body.hide-scroll::after {
-    display: none;
+/* Shared decorative keyframes: the breathing glow on section-title
+   blossoms (section 11), the moon-glint shimmer on the login wordmark
+   and the login card's rise (section 15) */
+@keyframes sakura-breathe {
+    0%,
+    100% {
+        opacity: 0.7;
+        text-shadow: 0 0 4px rgba(var(--accent-rgb), 0.3);
+    }
+    50% {
+        opacity: 1;
+        text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.7);
+    }
+}
+
+@keyframes sakura-shimmer {
+    0%,
+    100% {
+        background-position: 0% 0;
+    }
+    50% {
+        background-position: 100% 0;
+    }
+}
+
+@keyframes sakura-rise {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* One switch stills every decorative animation — the petals keep their
+   scattered first-frame positions, nothing disappears */
+@media (prefers-reduced-motion: reduce) {
+    .backgroundContainer::after,
+    .sectionTitle.sectionTitle-cards::before,
+    #loginPage .padded-bottom-page,
+    #loginPage .padded-bottom-page::before {
+        animation: none !important;
+    }
 }
 
 ::selection {
@@ -252,6 +344,9 @@ a[is="emby-linkbutton"]:not(.raised):not(.navMenuOption),
     color: var(--text-muted);
     opacity: 1;
     border-radius: 999px;
+    transition:
+        background 0.15s ease-out,
+        color 0.15s ease-out;
 }
 
 .emby-tab-button:hover {
@@ -292,7 +387,11 @@ html .navMenuOption {
 
 .navMenuOption-selected,
 .navMenuOption-selected:hover {
-    background: rgba(var(--accent-rgb), 0.2) !important;
+    background: linear-gradient(
+        90deg,
+        rgba(var(--accent-rgb), 0.3),
+        rgba(var(--accent-rgb), 0.14)
+    ) !important;
     color: var(--text) !important;
 }
 
@@ -323,10 +422,14 @@ html .navMenuOption {
     filter: brightness(1.15);
 }
 
-/* Primary / submit buttons → blossom pink */
+/* Primary / submit buttons → a soft blossom gradient */
 .emby-button.raised.button-submit,
 .button-submit {
-    background: var(--accent) !important;
+    background: linear-gradient(
+        135deg,
+        var(--accent-hover),
+        var(--accent)
+    ) !important;
     color: var(--on-accent) !important;
 }
 
@@ -384,7 +487,11 @@ html .detailButton:hover {
 }
 
 html .detailButton.btnPlay {
-    background: var(--accent) !important;
+    background: linear-gradient(
+        135deg,
+        var(--accent-hover),
+        var(--accent)
+    ) !important;
     color: var(--on-accent) !important;
 }
 
@@ -416,11 +523,20 @@ html .emby-button.buttonActive {
     border-radius: var(--card-radius);
 }
 
-/* Hovering a card blooms a faint pink glow around the ARTWORK only — a
-   shadow on .cardBox would outline the transparent footer area below
-   the artwork too */
+/* Hovering a card lifts it gently and blooms a faint pink glow around
+   the ARTWORK only — a shadow on .cardBox would outline the transparent
+   footer area below the artwork too. The lift rides on .cardBox so the
+   caption rises with the art. */
+.cardBox {
+    transition: transform 0.18s ease-out;
+}
+
+.card:hover .cardBox {
+    transform: translateY(-3px);
+}
+
 .cardImageContainer {
-    transition: box-shadow 0.15s ease-out;
+    transition: box-shadow 0.18s ease-out;
 }
 
 .card:hover .cardImageContainer {
@@ -468,7 +584,11 @@ html .emby-button.buttonActive {
 }
 
 .itemProgressBarForeground {
-    background-color: var(--accent) !important;
+    background: linear-gradient(
+        90deg,
+        var(--accent-pressed),
+        var(--accent-hover)
+    ) !important;
 }
 
 /* Multiple-versions count (top-left of a card) — stock paints it blue;
@@ -523,13 +643,18 @@ html .emby-select-withcolor {
     color: var(--text) !important;
     border: 1px solid var(--divider) !important;
     border-radius: var(--radius) !important;
+    transition:
+        border-color 0.15s ease-out,
+        box-shadow 0.15s ease-out;
 }
 
+/* Focus blooms a soft ring around the field */
 html .emby-input:focus,
 html .emby-textarea:focus,
 html select.emby-select:focus,
 html .emby-select-withcolor:focus {
     border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.16) !important;
 }
 
 /* The dropdown list itself (theme.css paints options #222) */
@@ -591,7 +716,9 @@ input[is="emby-slider"]::-moz-range-thumb {
     background: var(--surface) !important;
     border: 1px solid var(--divider);
     border-radius: calc(var(--radius) * 2);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    box-shadow:
+        0 0 40px rgba(var(--accent-rgb), 0.14),
+        0 12px 32px rgba(0, 0, 0, 0.5);
 }
 
 .formDialogHeader:not(.formDialogHeader-clear) {
@@ -644,6 +771,17 @@ input[is="emby-slider"]::-moz-range-thumb {
 
 .upNextDialog-countdownText {
     color: var(--accent-hover);
+}
+
+/* Buffering spinner: the stock rotation animation now spins a blossom.
+   The icon font (material-design-icons-iconfont) resolves class → glyph
+   through per-class ::before content rules, so the icon can simply be
+   re-contented; the font-family must leave the icon font or the
+   character would render as tofu. */
+#videoOsdPage .material-icons.autorenew::before {
+    content: "❀";
+    font-family: var(--font-body) !important;
+    font-size: 0.9em;
 }
 
 /* ============================================================================
@@ -896,6 +1034,7 @@ body.dashboardDocument .MuiDrawer-paper {
     font-size: 0.75em;
     margin-right: 0.5em;
     vertical-align: 0.1em;
+    animation: sakura-breathe 4s ease-in-out infinite;
 }
 
 /* Clickable section titles stay petal-white (they are links) — the chevron
@@ -948,6 +1087,10 @@ a[is="emby-linkbutton"].sectionTitleTextButton .sectionTitle {
     background: var(--surface-high);
     border-radius: 50%;
     color: var(--text);
+    transition:
+        background 0.12s ease-out,
+        color 0.12s ease-out,
+        transform 0.12s ease-out;
 }
 
 /* Center the glyph by pinning it to the geometric center of the circle —
@@ -968,6 +1111,7 @@ a[is="emby-linkbutton"].sectionTitleTextButton .sectionTitle {
 .emby-scrollbuttons .emby-scrollbuttons-button:hover:not(:disabled) {
     background: var(--accent);
     color: var(--on-accent);
+    transform: scale(1.08);
 }
 
 .emby-scrollbuttons .emby-scrollbuttons-button:disabled {
@@ -999,12 +1143,18 @@ a[is="emby-linkbutton"].sectionTitleTextButton .sectionTitle {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: linear-gradient(
-        180deg,
-        rgba(var(--bg-rgb), 0.15) 0%,
-        rgba(var(--bg-rgb), 0.45) 55%,
-        var(--bg) 100%
-    );
+    background:
+        radial-gradient(
+            ellipse 60% 55% at 12% 100%,
+            rgba(var(--accent-rgb), 0.12),
+            transparent 70%
+        ),
+        linear-gradient(
+            180deg,
+            rgba(var(--bg-rgb), 0.15) 0%,
+            rgba(var(--bg-rgb), 0.45) 55%,
+            var(--bg) 100%
+        );
 }
 
 /* Keep the resume progress bar above the fade */
@@ -1067,7 +1217,15 @@ html .mediaInfoText {
     border-radius: calc(var(--radius) / 2);
 }
 
-/* The star rating glows moon-gold over the night sky */
+/* The rating star IS a blossom — the icon-font glyph is swapped the
+   same way as the OSD spinner (section 8), and it glows moon-gold
+   over the night sky. The html prefix outranks the icon font's own
+   ::before rule, which loads after this file. */
+html .material-icons.star::before {
+    content: "❀";
+    font-family: var(--font-body) !important;
+}
+
 .starIcon {
     color: var(--moon);
 }
@@ -1403,12 +1561,31 @@ body:has(#loginPage:not(.hide)) .skinHeader {
     align-items: center;
     padding-top: 0 !important; /* stock reserves 4.5em for the hidden header */
     overflow-y: auto;
-    /* soft blossom bloom behind the card */
-    background: radial-gradient(
-        ellipse 90% 65% at 50% -15%,
-        rgba(var(--accent-rgb), 0.2),
-        transparent 65%
-    );
+    /* a hazy moon upper-right, and a soft blossom bloom behind the card */
+    background:
+        radial-gradient(
+            circle 4.5em at 79% 16%,
+            rgba(var(--moon-rgb), 0.2),
+            transparent 70%
+        ),
+        radial-gradient(
+            ellipse 90% 65% at 50% -15%,
+            rgba(var(--accent-rgb), 0.2),
+            transparent 65%
+        );
+}
+
+/* A grand blossom silhouette resting behind the card, lower-left */
+#loginPage::after {
+    content: "❀";
+    position: absolute;
+    left: 5%;
+    bottom: 7%;
+    font-size: 8em;
+    line-height: 1;
+    color: rgba(var(--accent-rgb), 0.08);
+    transform: rotate(-12deg);
+    pointer-events: none;
 }
 
 /* The auth card. The !importants beat .padded-bottom-page's own
@@ -1420,8 +1597,11 @@ body:has(#loginPage:not(.hide)) .skinHeader {
     background: var(--surface);
     border: 1px solid var(--divider);
     border-radius: calc(var(--radius) * 2);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    box-shadow:
+        0 0 40px rgba(var(--accent-rgb), 0.14),
+        0 12px 32px rgba(0, 0, 0, 0.5);
     overflow: hidden; /* clips the corner blossom below */
+    animation: sakura-rise 0.5s ease-out;
 }
 
 /* Wordmark above the form, in the display serif with a blossom-gradient
@@ -1437,11 +1617,21 @@ body:has(#loginPage:not(.hide)) .skinHeader {
     font-weight: 600;
     letter-spacing: 0.1em;
     margin-bottom: 0.4em;
-    background: linear-gradient(100deg, var(--accent-hover), var(--accent));
+    /* blossom-gradient fill with a slow moon-gold glint passing through */
+    background: linear-gradient(
+        100deg,
+        var(--accent-hover) 0%,
+        var(--accent) 38%,
+        var(--moon) 50%,
+        var(--accent) 62%,
+        var(--accent-hover) 100%
+    );
+    background-size: 220% 100%;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
+    animation: sakura-shimmer 7s ease-in-out infinite;
 }
 
 /* A large translucent blossom resting in the card's top-right corner,
@@ -1502,12 +1692,17 @@ body:has(#loginPage:not(.hide)) .skinHeader {
 }
 
 #loginPage #divUsers .cardContent {
-    transition: box-shadow 0.12s ease-out;
+    transition:
+        box-shadow 0.12s ease-out,
+        transform 0.12s ease-out;
 }
 
 #loginPage #divUsers .card:hover .cardContent,
 #loginPage #divUsers .card:focus .cardContent {
-    box-shadow: 0 0 0 3px var(--accent);
+    box-shadow:
+        0 0 0 3px var(--accent),
+        0 0 18px rgba(var(--accent-rgb), 0.4);
+    transform: scale(1.04);
 }
 
 #loginPage #divUsers .cardFooter {
