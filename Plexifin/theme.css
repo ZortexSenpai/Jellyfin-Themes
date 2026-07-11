@@ -67,6 +67,13 @@
                                              keep in px: header, page and drawer
                                              offsets must match exactly, and em
                                              would drift with local font sizes */
+    --header-height:  3.8em;              /* top bar height = how far the pinned
+                                             sidebar is pushed down (section 10).
+                                             Matches the bar's natural height:
+                                             2×0.54em padding + one icon button
+                                             (24px icon + 2×0.556em padding).
+                                             Small mismatches are invisible —
+                                             header and sidebar share one bg */
 }
 
 /* ============================================================================
@@ -507,15 +514,18 @@ html {
 }
 
 /* ============================================================================
-   10. PLEX LAYOUT — PINNED SIDEBAR (home & library pages, wide screens)
+   10. PLEX LAYOUT — FULL-WIDTH HEADER + PINNED SIDEBAR (home & library
+   pages, wide screens)
    ----------------------------------------------------------------------------
-   On desktop windows wider than ~1024px the navigation drawer is pinned
-   open like Plex's sidebar, the header and content shift right, and the
-   "My Media" tile row disappears from Home (your libraries live in the
-   sidebar instead — exactly like Plex). Narrower windows, mobile, TV
-   layout and video playback all fall back to stock behavior.
+   On desktop windows wider than ~1024px the top bar spans the full window
+   with the logo parked in its far-left corner, the navigation drawer is
+   pinned open BELOW the bar like Plex's sidebar, content shifts right,
+   and the "My Media" tile row disappears from Home (your libraries live
+   in the sidebar instead — exactly like Plex). Narrower windows, mobile,
+   TV layout and video playback all fall back to stock behavior.
 
-   Change the sidebar width via --drawer-width in the config block.
+   Change the sidebar width via --drawer-width and the bar height via
+   --header-height in the config block.
    Delete this whole section if you prefer the stock hamburger drawer.
 
    Scoping notes:
@@ -526,7 +536,8 @@ html {
    ========================================================================== */
 
 @media all and (min-width: 64em) {
-    /* Pin the drawer (overrides the inline left/transform set by JS).
+    /* Pin the drawer BELOW the top bar (overrides the inline left/transform
+       set by JS; stock anchors bottom: 0, so offsetting top is enough).
        Same tone as the page so it still reads as one plane, but OPAQUE and
        stacked above the page content — horizontally scrolling card rows can
        paint past the page edge, and must never show over or through the nav.
@@ -534,7 +545,7 @@ html {
     html.layout-desktop:not(.transparentDocument) body.libraryDocument:not(.hide-scroll) .mainDrawer {
         display: flex !important;
         left: 0 !important;
-        top: 0 !important;
+        top: var(--header-height) !important;
         width: var(--drawer-width) !important;
         transform: none !important;
         z-index: 20 !important;
@@ -549,13 +560,62 @@ html {
                              itself or em-based widths would drift */
     }
 
-    /* Header and pages sit to the right of the sidebar */
-    html.layout-desktop:not(.transparentDocument) body.libraryDocument:not(.hide-scroll) .skinHeader:not(.osdHeader) {
+    /* The header keeps its stock full-window width (left: 0) and sits above
+       the sidebar; only the pages shift right */
+    html.layout-desktop:not(.transparentDocument) body.libraryDocument:not(.hide-scroll) .mainAnimatedPage:not(#videoOsdPage) {
         left: var(--drawer-width) !important;
     }
 
-    html.layout-desktop:not(.transparentDocument) body.libraryDocument:not(.hide-scroll) .mainAnimatedPage:not(#videoOsdPage) {
-        left: var(--drawer-width) !important;
+    /* Home-page logo moves to the far LEFT of the bar, into the corner above
+       the sidebar — where Plex parks its logo. Only the logo variant of the
+       page title moves (flex order; the buttons come first in the DOM);
+       text titles keep their stock spot after the back/home buttons.
+
+       The logo is drawn slightly SMALLER than its box (1.55em in a 2em box)
+       so there is slack to nudge it around without anything clipping —
+       wordmark descenders make a mathematically centered logo read as
+       sitting too high. background-position holds both nudges: 0.75em in
+       from the box's left edge, and 0.15em down from dead center (up to
+       ±0.22em stays inside the box vertically; the box is far wider than
+       the logo, so there's ample sideways room). Offsetting the ELEMENT
+       instead (position/margin) would clip: .headerLeft is overflow:
+       hidden and exactly as tall as its content. */
+    html.layout-desktop:not(.transparentDocument) body.libraryDocument:not(.hide-scroll) .headerLeft .pageTitle.pageTitleWithLogo {
+        order: -1;
+        margin-inline: 0 0.5em;
+        height: 2em;
+        background-size: auto 1.55em;
+        background-position: 0.75em calc(50% + 0.15em);
+    }
+
+    /* With the sidebar tucked below it the bar must stay a SINGLE row, so
+       the tab strip (Movies / Suggestions / …) overlays the bar, centered.
+       Stock only folds the tabs up on ≥100em screens (via a fixed -4.3em
+       margin); absolute centering does the same job at every pinned width
+       and any bar height. Taken out of the flow, the tabs also no longer
+       add a second header row that would cover the top of the sidebar. */
+    html.layout-desktop:not(.transparentDocument) body.libraryDocument:not(.hide-scroll) .skinHeader:not(.osdHeader) .headerTabs {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: auto;
+        margin: 0;
+    }
+
+    /* Pages normally reserve top padding for the stock TWO-row header below
+       100em; with the tabs folded into the bar, stock's own ≥100em single-row
+       values are the right reserve at every pinned width. */
+    html.layout-desktop:not(.transparentDocument) body.libraryDocument:not(.hide-scroll) .libraryPage:not(.noSecondaryNavPage) {
+        padding-top: 4.6em !important;
+    }
+
+    html.layout-desktop:not(.transparentDocument) body.libraryDocument:not(.hide-scroll) .pageWithAbsoluteTabs:not(.noSecondaryNavPage) {
+        padding-top: 6.7em !important;
+    }
+
+    html.layout-desktop:not(.transparentDocument) body.libraryDocument:not(.hide-scroll) .absolutePageTabContent {
+        top: 5.7em !important;
     }
 
     /* The hamburger and the swipe handle are pointless while pinned */
@@ -577,12 +637,14 @@ html {
 /* ----------------------------------------------------------------------------
    DASHBOARD / SETTINGS AREA — this is a separate MUI (Material UI) app, NOT
    the classic layout: its sidebar is a MuiDrawer hardcoded to 240px in JS,
-   and its top bar is a MuiAppBar sized calc(100% - 240px). Resize all of it
-   to --drawer-width so the sidebar stays the same width as on home/library
-   pages. 900px = MUI's 'md' breakpoint, where this drawer becomes permanent;
-   below that it's a temporary overlay we leave alone. The :has() guard skips
-   pages that render no docked drawer (e.g. Metadata Manager), where the app
-   bar is intentionally full-width.
+   and its top bar is a MuiAppBar sized calc(100% - 240px) beside it. Match
+   the main app's geometry instead: the app bar spans the full window and
+   the sidebar (resized to --drawer-width) tucks below it. 64px = MUI's
+   fixed desktop toolbar height (px-based, independent of the em scale).
+   900px = MUI's 'md' breakpoint, where this drawer becomes permanent;
+   below that it's a temporary overlay we leave alone. The :has() guard
+   skips pages that render no docked drawer (e.g. Metadata Manager), where
+   the app bar is intentionally full-width already.
    ------------------------------------------------------------------------- */
 
 @media all and (min-width: 900px) {
@@ -591,9 +653,14 @@ html {
         width: var(--drawer-width) !important;
     }
 
+    body.dashboardDocument .MuiDrawer-docked .MuiDrawer-paper {
+        top: 64px !important;
+        height: calc(100% - 64px) !important;
+    }
+
     body.dashboardDocument:has(.MuiDrawer-docked) .MuiAppBar-root {
-        width: calc(100% - var(--drawer-width)) !important;
-        margin-left: var(--drawer-width) !important;
+        width: 100% !important;
+        margin-left: 0 !important;
     }
 }
 
