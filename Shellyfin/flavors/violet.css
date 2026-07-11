@@ -1,0 +1,31 @@
+/* ============================================================================
+   SHELLYFIN FLAVOR — Violet (purple phosphor)
+   ----------------------------------------------------------------------------
+   Install (Dashboard → General → Custom CSS) — @import the base theme
+   and this file, in that order:
+       @import url("<where-you-host>/theme.css");
+       @import url("<where-you-host>/flavors/violet.css");
+   …or paste this file below the full contents of theme.css. The flavor
+   must load AFTER the base so its :root wins. A flavor only re-points
+   the :root tokens; the derived tints (--hover, --divider, --glow)
+   track --accent-rgb automatically.
+   ========================================================================== */
+
+:root {
+    /* Accent — bright violet phosphor */
+    --accent: #a955ff;
+    --accent-rgb: 169, 85, 255;
+    --accent-hover: #b66fff; /* violet, 15% toward white */
+    --accent-pressed: #9048d9; /* violet, 15% toward black */
+    --on-accent: #0d0412;
+
+    /* Neutrals — near-black with a violet cast */
+    --bg: #09060e;
+    --bg-rgb: 9, 6, 14;
+    --surface: #0f0b1a;
+    --surface-high: #1a1228;
+
+    /* Text */
+    --text: #cfa9f5; /* pale violet */
+    --text-muted: #8955a0;
+}

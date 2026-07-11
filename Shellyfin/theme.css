@@ -1,0 +1,1753 @@
+/* ============================================================================
+   SHELLYFIN — a terminal (CLI) skin for Jellyfin
+   ----------------------------------------------------------------------------
+   Install: Jellyfin Dashboard → General → Custom CSS → paste this whole file.
+   (Users should have their theme set to "Dark" in Display settings.)
+   Tested against the Jellyfin 10.10 / 10.11 web client.
+
+   Same layout skeleton as Plexifin (pinned sidebar, home rows, pre-play
+   detail pages, episode grid, themed dashboard, centered login) — dressed
+   as a phosphor-green console: monospace type, square corners, outlined
+   TUI buttons, inverse-video active states, "$" prompts on section
+   titles, a blinking cursor on the login prompt and CRT scanlines.
+
+   All colors are configured in the :root block directly below. Quick
+   dials: --scanline-opacity: 0 kills the CRT effect, --glow: none kills
+   the phosphor text glow. Other phosphors live in flavors/ (amber VT220,
+   violet, ice, mono) — load one AFTER this file: @import both (base
+   first, flavor second) or paste the flavor below this whole file. See
+   README.md. Keep --radius at 0 — terminals have corners.
+   ========================================================================== */
+
+:root {
+    /* ------------------------------------------------------------------
+       ACCENT — buttons, links, active states, progress bars, checkboxes.
+       Bright phosphor green; --on-accent flips dark for inverse video.
+       Keep --accent-rgb in sync (used for tints, borders and glows).
+       ------------------------------------------------------------------ */
+    --accent: #3dff7c; /* phosphor green */
+    --accent-rgb: 61, 255, 124; /* --accent as R, G, B */
+    --accent-hover: #7dffa8; /* lighter shade, hover states */
+    --accent-pressed: #2bd45f; /* darker shade, pressed states */
+    --on-accent: #041207; /* dark "screen" text on accent */
+
+    /* ------------------------------------------------------------------
+       NEUTRALS — near-black with a green cast. bg is the single app
+       plane (page + header + sidebar); surface is for floating elements
+       (menus, dialogs, terminal windows); surface-high for interactive
+       fills (selected rows, chips, scrollbar thumbs).
+       ------------------------------------------------------------------ */
+    --bg: #060a07;
+    --bg-rgb: 6, 10, 7; /* --bg as R, G, B */
+    --surface: #0b120d;
+    --surface-high: #122016;
+
+    /* Derived — green-tinted hairlines and hovers (every frame/border in
+       the theme runs through --divider, like box-drawing characters) */
+    --header-bg: var(--bg);
+    --hover: rgba(var(--accent-rgb), 0.07);
+    --divider: rgba(var(--accent-rgb), 0.22);
+
+    /* ------------------------------------------------------------------
+       TEXT
+       ------------------------------------------------------------------ */
+    --text: #a9f5bc; /* pale phosphor */
+    --text-muted: #55a06c;
+
+    /* ------------------------------------------------------------------
+       TERMINAL DRESSING
+       ------------------------------------------------------------------ */
+    --font-mono:
+        ui-monospace, "Cascadia Code", "JetBrains Mono", "Fira Code", "SF Mono",
+        Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    --scanline-opacity: 0.15; /* 0 disables the CRT overlay */
+    --glow: 0 0 9px rgba(var(--accent-rgb), 0.3); /* none = off */
+    --meter-cell: 6px; /* progress bars: block width  ██ */
+    --meter-gap: 3px; /* progress bars: gap between blocks */
+
+    /* ------------------------------------------------------------------
+       SHAPE & LAYOUT
+       ------------------------------------------------------------------ */
+    --radius: 0; /* terminals have corners */
+    --card-radius: 0;
+    --detail-poster-width: 18vw; /* poster size on detail pages
+                                             (section 12). Stock is 25vw.
+                                             KEEP THIS IN vw — the whole stock
+                                             detail layout is proportional,
+                                             and fixed px sizes break it */
+    --drawer-width: 280px; /* pinned sidebar width (section 10) —
+                                             keep in px: header, page and drawer
+                                             offsets must match exactly, and em
+                                             would drift with local font sizes */
+}
+
+/* ============================================================================
+   1. BASE & BACKGROUND — monospace everything, phosphor caret, scanlines
+   ========================================================================== */
+
+/* The terminal font, everywhere — EXCEPT the icon font, whose glyphs are
+   ligature names rendered through "Material Icons" and would otherwise
+   appear as literal text */
+*:not(.material-icons) {
+    font-family: var(--font-mono) !important;
+}
+
+html {
+    color: var(--text);
+    caret-color: var(--accent);
+}
+
+.backgroundContainer {
+    background: var(--bg) !important;
+}
+
+/* Item detail pages: dim the backdrop art hard — a terminal shows art
+   through a heavy phosphor filter, not a glossy hero image */
+.backgroundContainer.withBackdrop {
+    background: linear-gradient(
+        rgba(var(--bg-rgb), 0.88),
+        rgba(var(--bg-rgb), 0.97)
+    ) !important;
+}
+
+/* CRT scanlines across the whole UI (set --scanline-opacity: 0 to turn
+   off). Fixed, click-through, and removed while a video plays
+   (body.hide-scroll) so the movie itself stays clean. */
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    pointer-events: none;
+    opacity: var(--scanline-opacity);
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.55) 0 1px,
+        transparent 1px 3px
+    );
+}
+
+body.hide-scroll::after {
+    display: none;
+}
+
+/* Shared animations: the block-cursor blink (login prompt, row titles,
+   nav hover) and the typewriter reveal (sidebar/settings hover) */
+@keyframes shellyfin-blink {
+    0%,
+    49% {
+        opacity: 1;
+    }
+    50%,
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes shellyfin-type {
+    from {
+        max-width: 0;
+    }
+    to {
+        max-width: 28ch;
+    }
+}
+
+/* Inverse video selection */
+::selection {
+    background: var(--accent);
+    color: var(--on-accent);
+}
+
+/* Kill Jellyfin-blue links (raised link-buttons and sidebar items keep
+   their own colors — accent there is reserved for the selected state) */
+a[is="emby-linkbutton"]:not(.raised):not(.navMenuOption),
+.emby-button.button-link {
+    color: var(--accent-hover) !important;
+}
+
+/* ============================================================================
+   2. TOP BAR (header) — a status bar: same tone as the page, hairline
+   underneath, active tab in inverse video
+   ========================================================================== */
+
+.skinHeader,
+.skinHeader-withBackground,
+.skinHeader.semiTransparent {
+    background: var(--header-bg) !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    color: var(--text);
+    border-bottom: 1px solid var(--divider);
+}
+
+.pageTitle {
+    color: var(--text);
+}
+
+/* Library titles read as paths: "~/Movies" (skipped when the title slot
+   shows a logo image instead of text) */
+.pageTitle:not(.pageTitleWithLogo)::before {
+    content: "~/";
+    color: var(--text-muted);
+}
+
+/* Item detail pages blank the header title entirely (setTitle('') in the
+   controller), which would leave the prefix above dangling as a bare
+   "~/". The slot doesn't stay empty though — section 12 MOVES the item's
+   own h1 into the bar, path included. */
+.pageTitle:empty::before {
+    content: none;
+}
+
+/* The home page shows the default Jellyfin logo in that slot — swap it
+   for the home directory itself: "~". The stock rule paints the logo as
+   a background-image on a 13.2em box; both are undone so the tilde sits
+   like any other title. Custom server logos (.pageTitleWithLogo WITHOUT
+   the -Default- class) are left alone. */
+.pageTitle.pageTitleWithDefaultLogo {
+    background-image: none;
+    width: auto;
+}
+
+.pageTitle.pageTitleWithDefaultLogo::before {
+    content: "~";
+    color: var(--text);
+}
+
+/* Stock Jellyfin gives the header bar NO horizontal padding below 1600px
+   (100em) — the profile avatar and the left-side buttons sit flush against
+   the window edges on anything smaller than that. Give the bar the same
+   breathing room at every width instead. (The dashboard's MUI toolbar has
+   its own built-in padding and needs no help.) */
+.headerTop {
+    padding: 0.54em 1em;
+}
+
+/* Header tabs (Movies / Suggestions / Genres …) — the active one flips to
+   inverse video like a TUI menu bar */
+.emby-tab-button {
+    color: var(--text-muted);
+    opacity: 1;
+}
+
+.emby-tab-button:hover {
+    color: var(--text);
+}
+
+.emby-tab-button-active,
+.emby-tab-button-active:hover {
+    color: var(--on-accent) !important;
+    background: var(--accent);
+    box-shadow: none;
+}
+
+/* ============================================================================
+   3. SIDEBAR (drawer) — square items; the selected one gets an accent tint
+   and a "> " cursor. As an overlay (narrow screens) it floats on --surface;
+   pinned (section 10) it sits directly on the page background.
+   ========================================================================== */
+
+.mainDrawer {
+    background: var(--surface) !important;
+}
+
+.navMenuOption {
+    margin: 0.1em 0.75em;
+    border-radius: var(--radius);
+    color: var(--text-muted);
+}
+
+.navMenuOption:hover {
+    background: var(--hover);
+    color: var(--text);
+}
+
+.navMenuOption-selected,
+.navMenuOption-selected:hover {
+    background: rgba(var(--accent-rgb), 0.18) !important;
+    color: var(--text) !important;
+}
+
+.navMenuOption-selected .navMenuOptionText::before {
+    content: "> ";
+    color: var(--accent);
+}
+
+.navMenuOption-selected .navMenuOptionIcon {
+    color: var(--accent-hover);
+}
+
+.sidebarHeader {
+    color: var(--text-muted);
+    font-size: 0.8em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+/* Hovering a nav item "types" its label out, then a block cursor blinks
+   at the end — like tab completion. Monospace makes the steps() reveal
+   line up with characters; labels longer than 28ch simply finish early.
+   Applies to the main sidebar, the user settings menu
+   (.userPreferencesPage) and the dashboard sidebar (MUI). display:block
+   is needed because max-width does nothing on inline spans (the MUI
+   label). Skipped for users who prefer reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+    .navMenuOption:hover .navMenuOptionText,
+    .userPreferencesPage .listItem:hover .listItemBodyText,
+    body.dashboardDocument
+        .MuiDrawer-paper
+        .MuiListItemButton-root:hover
+        .MuiListItemText-primary {
+        display: block;
+        overflow: hidden;
+        white-space: nowrap;
+        animation: shellyfin-type 0.6s steps(28, end);
+    }
+
+    .navMenuOption:hover .navMenuOptionText::after,
+    .userPreferencesPage .listItem:hover .listItemBodyText::after,
+    body.dashboardDocument
+        .MuiDrawer-paper
+        .MuiListItemButton-root:hover
+        .MuiListItemText-primary::after {
+        content: "▋";
+        margin-left: 0.15em;
+        color: var(--accent);
+        animation: shellyfin-blink 1.1s steps(1) infinite;
+    }
+}
+
+/* ============================================================================
+   4. BUTTONS — outlined TUI buttons; primary actions in inverse video
+   ========================================================================== */
+
+/* Raised (secondary) buttons: transparent with a frame, like [ Cancel ] */
+.emby-button.raised {
+    background: transparent;
+    border: 1px solid var(--divider);
+    color: var(--text);
+    border-radius: var(--radius);
+}
+
+.emby-button.raised:hover {
+    border-color: var(--accent);
+    background: var(--hover);
+}
+
+/* Primary / submit buttons → filled accent (inverse video) */
+.emby-button.raised.button-submit,
+.button-submit {
+    background: var(--accent) !important;
+    border-color: var(--accent);
+    color: var(--on-accent) !important;
+}
+
+.emby-button.raised.button-submit:hover,
+.button-submit:hover {
+    background: var(--accent-hover) !important;
+}
+
+.emby-button.raised.button-submit:active,
+.button-submit:active {
+    background: var(--accent-pressed) !important;
+}
+
+/* Floating action button (e.g. "+" on dashboard pages) */
+.fab {
+    background: var(--accent) !important;
+    color: var(--on-accent) !important;
+    border-radius: var(--radius) !important;
+}
+
+.fab:hover {
+    background: var(--accent-hover) !important;
+}
+
+/* Icon buttons (header, player controls, card menus) */
+.paper-icon-button-light:hover:not(:disabled) {
+    color: var(--accent-hover);
+    background: rgba(var(--accent-rgb), 0.14);
+}
+
+.paper-icon-button-light.show-focus:focus {
+    color: var(--accent-hover);
+}
+
+/* Detail page action row — SQUARE outlined buttons, Play in inverse
+   video. Stock styles force their own padding with !important, so the
+   square is sized explicitly (fixed width/height, padding 0); the html
+   prefix outranks theme.css, which Jellyfin loads AFTER this custom CSS
+   (see note in section 6). */
+html .detailButton {
+    background: transparent;
+    border: 1px solid var(--divider);
+    color: var(--text);
+    border-radius: 0;
+    width: 2.9em;
+    height: 2.9em;
+    padding: 0 !important;
+    flex-shrink: 0;
+    transition:
+        border-color 0.1s ease-out,
+        background 0.1s ease-out;
+}
+
+html .detailButton:hover {
+    border-color: var(--accent);
+    background: var(--hover);
+}
+
+html .detailButton.btnPlay {
+    background: var(--accent) !important;
+    border-color: var(--accent);
+    color: var(--on-accent) !important;
+}
+
+html .detailButton.btnPlay:hover {
+    background: var(--accent-hover) !important;
+}
+
+/* Active toggles (Played ✓, Favorite ♥) — theme.css paints these blue */
+html .emby-button.buttonActive {
+    color: var(--accent-hover) !important;
+}
+
+/* ============================================================================
+   5. CARDS / POSTERS — framed panels: hairline border that lights up on
+   hover, square corners, dark hover overlay with an accent play button
+   ========================================================================== */
+
+.cardBox {
+    border-radius: var(--card-radius);
+    border: 1px solid var(--divider);
+    background: var(--surface);
+    transition: border-color 0.1s ease-out;
+}
+
+.cardBox:hover {
+    border-color: rgba(var(--accent-rgb), 0.6);
+}
+
+.cardImageContainer,
+.cardPadder,
+.cardContent,
+.chapterCard,
+.cardImage {
+    border-radius: var(--card-radius);
+}
+
+/* Hover overlay: darken bottom, accent play button */
+.cardOverlayContainer {
+    border-radius: var(--card-radius);
+    background: linear-gradient(rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.75) 100%);
+}
+
+.cardOverlayFab-primary {
+    background: rgba(var(--accent-rgb), 0.9) !important;
+    color: var(--on-accent) !important;
+    border-radius: 0;
+    transition: background 0.1s ease-out;
+}
+
+.cardOverlayFab-primary:hover {
+    background: var(--accent) !important;
+}
+
+.cardOverlayButton:hover {
+    color: var(--accent-hover);
+}
+
+/* Card captions: left-aligned, muted second line */
+.cardText {
+    text-align: left;
+    color: var(--text);
+}
+
+.cardText-secondary {
+    color: var(--text-muted) !important;
+}
+
+/* Watched checkmark / episode count / progress — square accent badges */
+.playedIndicator,
+.countIndicator {
+    background: var(--accent) !important;
+    color: var(--on-accent) !important;
+    border-radius: 0;
+}
+
+.itemProgressBarForeground {
+    background-color: var(--accent) !important;
+}
+
+/* Section headings — full prompt treatment lives in section 11 */
+.sectionTitle {
+    color: var(--text);
+}
+
+/* ============================================================================
+   6. FORMS — inputs, selects, checkboxes, sliders
+   ========================================================================== */
+
+/* NOTE: Jellyfin appends theme.css to <body> at runtime, AFTER this custom
+   CSS — equal-specificity rules lose to it no matter what. The `html`
+   prefix on the rules below adds just enough specificity to always win. */
+
+/* Inputs are bare framed slots — you type straight onto the screen */
+html .emby-input,
+html .emby-textarea,
+html select.emby-select,
+html .emby-select-withcolor {
+    background: transparent !important;
+    color: var(--text) !important;
+    border: 1px solid var(--divider) !important;
+    border-radius: var(--radius) !important;
+}
+
+html .emby-input:focus,
+html .emby-textarea:focus,
+html select.emby-select:focus,
+html .emby-select-withcolor:focus {
+    border-color: var(--accent) !important;
+}
+
+/* The dropdown list itself (theme.css paints options #222) */
+html select.emby-select > option,
+html .emby-select-withcolor > option {
+    background: var(--surface);
+    color: var(--text);
+}
+
+/* Select labels and the dropdown arrow */
+html .selectLabel {
+    color: var(--text-muted);
+}
+
+html .selectArrowContainer {
+    color: var(--text-muted);
+}
+
+.inputLabelFocused,
+.selectLabelFocused,
+.textareaLabelFocused {
+    color: var(--accent-hover);
+}
+
+/* Checkboxes */
+html .emby-checkbox:checked + span + .checkboxOutline {
+    background-color: var(--accent);
+    border-color: var(--accent);
+}
+
+html .emby-checkbox:focus:not(:checked) + span + .checkboxOutline {
+    border-color: var(--accent-hover);
+}
+
+.checkboxIcon {
+    color: var(--on-accent);
+}
+
+/* Sliders (seek bar, volume, brightness — including the fullscreen
+   player's OSD) — every meter reads as a CLI progress bar, ██████░░░░:
+   a repeating mask chops the track into square cells. The mask sits on
+   the track CONTAINER, so it also chops the fill and the buffer bars —
+   this is the only approach that survives the fill being animated via
+   scaleX transform (the OSD position slider) instead of width. Dim
+   green cells = empty, bright accent cells = value. */
+html .mdl-slider-background-flex {
+    height: 0.45em;
+    margin-top: -0.225em;
+    background: rgba(var(--accent-rgb), 0.16);
+    -webkit-mask-image: repeating-linear-gradient(
+        90deg,
+        #000 0 var(--meter-cell),
+        transparent var(--meter-cell) calc(var(--meter-cell) + var(--meter-gap))
+    );
+    mask-image: repeating-linear-gradient(
+        90deg,
+        #000 0 var(--meter-cell),
+        transparent var(--meter-cell) calc(var(--meter-cell) + var(--meter-gap))
+    );
+}
+
+.mdl-slider-background-lower,
+.emby-slider-background-lower {
+    background-color: var(--accent) !important;
+}
+
+/* Square block thumb, like a cursor sitting on the meter */
+input[is="emby-slider"]::-webkit-slider-thumb {
+    background: var(--accent-hover) !important;
+    border-radius: 0 !important;
+}
+
+input[is="emby-slider"]::-moz-range-thumb {
+    background: var(--accent-hover) !important;
+    border-radius: 0 !important;
+}
+
+/* ============================================================================
+   7. DIALOGS, MENUS, LISTS — floating terminal windows
+   ========================================================================== */
+
+.dialog,
+.actionSheet {
+    background: var(--surface) !important;
+    border: 1px solid var(--divider);
+    border-radius: var(--radius);
+    box-shadow:
+        0 0 40px rgba(var(--accent-rgb), 0.1),
+        0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+.formDialogHeader:not(.formDialogHeader-clear) {
+    background: var(--surface) !important;
+    border-bottom: 1px solid var(--divider);
+    color: var(--text);
+}
+
+.formDialogFooter:not(.formDialogFooter-clear) {
+    background: var(--surface) !important;
+    border-top: 1px solid var(--divider);
+    color: var(--text);
+}
+
+/* Neutral hover in menus/lists — accent is reserved for selected/active */
+.actionSheetMenuItem:hover {
+    background: var(--hover) !important;
+}
+
+.listItem:hover {
+    background: var(--hover);
+}
+
+.listItemBodyText-secondary {
+    color: var(--text-muted) !important;
+}
+
+/* Loading spinner */
+.mdl-spinner__layer-1,
+.mdl-spinner__layer-2,
+.mdl-spinner__layer-3,
+.mdl-spinner__layer-4 {
+    border-color: var(--accent) !important;
+}
+
+/* ============================================================================
+   8. VIDEO PLAYER (OSD) — ASCII transport controls
+   ========================================================================== */
+
+.videoOsdBottom {
+    background: linear-gradient(
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.85) 100%
+    ) !important;
+}
+
+.osdTimeText {
+    color: var(--text);
+}
+
+.upNextDialog-countdownText {
+    color: var(--accent-hover);
+}
+
+/* OSD control icons remapped to terminal glyphs, mpv/cmus style. The icon
+   font (material-design-icons-iconfont) resolves class → glyph through
+   per-class ::before content rules, so each icon can simply be
+   re-contented with ASCII. The mono font must be forced per remapped
+   icon: the host span carries the Material Icons font-family, and
+   UNMAPPED icons in scope must keep it, or their private-use codepoints
+   turn into tofu. JS swaps classes at runtime (play_arrow/pause,
+   fullscreen/fullscreen_exit, volume_up/volume_off), so every state is
+   listed. Scoped to the player page + its header only. */
+#videoOsdPage .material-icons.play::before,
+#videoOsdPage .material-icons.play_arrow::before,
+#videoOsdPage .material-icons.pause::before,
+#videoOsdPage .material-icons.skip_previous::before,
+#videoOsdPage .material-icons.skip_next::before,
+#videoOsdPage .material-icons.fast_rewind::before,
+#videoOsdPage .material-icons.fast_forward::before,
+#videoOsdPage .material-icons.undo::before,
+#videoOsdPage .material-icons.redo::before,
+#videoOsdPage .material-icons.volume_up::before,
+#videoOsdPage .material-icons.volume_down::before,
+#videoOsdPage .material-icons.volume_off::before,
+#videoOsdPage .material-icons.volume_mute::before,
+#videoOsdPage .material-icons.fullscreen::before,
+#videoOsdPage .material-icons.fullscreen_exit::before,
+#videoOsdPage .material-icons.closed_caption::before,
+#videoOsdPage .material-icons.audiotrack::before,
+#videoOsdPage .material-icons.settings::before,
+#videoOsdPage .material-icons.airplay::before,
+#videoOsdPage .material-icons.picture_in_picture_alt::before,
+#videoOsdPage .material-icons.fiber_manual_record::before,
+#videoOsdPage .material-icons.favorite::before,
+#videoOsdPage .material-icons.autorenew::before,
+.osdHeader .material-icons.arrow_back::before {
+    font-family: var(--font-mono) !important;
+    font-weight: 700;
+    font-size: 0.85em;
+    letter-spacing: -0.04em;
+}
+
+#videoOsdPage .material-icons.play::before,
+#videoOsdPage .material-icons.play_arrow::before {
+    content: ">";
+}
+#videoOsdPage .material-icons.pause::before {
+    content: "||";
+}
+#videoOsdPage .material-icons.skip_previous::before {
+    content: "|<";
+}
+#videoOsdPage .material-icons.skip_next::before {
+    content: ">|";
+}
+#videoOsdPage .material-icons.fast_rewind::before {
+    content: "<<";
+}
+#videoOsdPage .material-icons.fast_forward::before {
+    content: ">>";
+}
+#videoOsdPage .material-icons.undo::before {
+    content: "<-";
+}
+#videoOsdPage .material-icons.redo::before {
+    content: "->";
+}
+#videoOsdPage .material-icons.volume_up::before {
+    content: "))";
+}
+#videoOsdPage .material-icons.volume_down::before {
+    content: ")";
+}
+#videoOsdPage .material-icons.volume_off::before,
+#videoOsdPage .material-icons.volume_mute::before {
+    content: "x";
+}
+#videoOsdPage .material-icons.fullscreen::before {
+    content: "[ ]";
+}
+#videoOsdPage .material-icons.fullscreen_exit::before {
+    content: "][";
+}
+#videoOsdPage .material-icons.closed_caption::before {
+    content: "cc";
+}
+#videoOsdPage .material-icons.audiotrack::before {
+    content: "♪";
+}
+#videoOsdPage .material-icons.settings::before {
+    content: "cfg";
+}
+#videoOsdPage .material-icons.airplay::before {
+    content: "tv";
+}
+#videoOsdPage .material-icons.picture_in_picture_alt::before {
+    content: "pip";
+}
+#videoOsdPage .material-icons.fiber_manual_record::before {
+    content: "rec";
+}
+#videoOsdPage .material-icons.favorite::before {
+    content: "<3";
+}
+.osdHeader .material-icons.arrow_back::before {
+    content: "<-";
+}
+
+/* Buffering spinner: a rotating "|" — stepping the stock rotation in 45°
+   jumps turns it into the classic  | / - \  terminal spinner. If a
+   future version drops the rotation animation, it degrades to a static
+   bar. */
+#videoOsdPage .material-icons.autorenew::before {
+    content: "|";
+}
+
+#videoOsdPage .material-icons.autorenew {
+    animation-timing-function: steps(8) !important;
+}
+
+/* ============================================================================
+   9. SCROLLBARS — square block thumbs
+   ========================================================================== */
+
+html {
+    scrollbar-color: var(--surface-high) transparent;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--surface-high);
+    border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--accent-rgb), 0.6);
+}
+
+/* ============================================================================
+   10. LAYOUT — PINNED SIDEBAR (home & library pages, wide screens)
+   ----------------------------------------------------------------------------
+   On desktop windows wider than ~1024px the navigation drawer is pinned
+   open like a tmux pane, the header and content shift right, and the
+   "My Media" tile row disappears from Home (your libraries live in the
+   sidebar instead). Narrower windows, mobile, TV layout and video
+   playback all fall back to stock behavior.
+
+   Change the sidebar width via --drawer-width in the config block.
+   Delete this whole section if you prefer the stock hamburger drawer.
+
+   Scoping notes:
+     html.layout-desktop          → only the desktop layout, never TV/mobile
+     html:not(.transparentDocument) → not on the video OSD / queue screens
+     body.libraryDocument         → only home/library/detail pages
+     body:not(.hide-scroll)       → never while a video is playing
+   ========================================================================== */
+
+@media all and (min-width: 64em) {
+    /* Pin the drawer (overrides the inline left/transform set by JS).
+       Same tone as the page with a hairline pane split on its right —
+       OPAQUE and stacked above the page content, so horizontally
+       scrolling card rows never show over or through the nav.
+       z-index 20 keeps it below the header (999) and dialogs (1000+). */
+    html.layout-desktop:not(.transparentDocument)
+        body.libraryDocument:not(.hide-scroll)
+        .mainDrawer {
+        display: flex !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: var(--drawer-width) !important;
+        transform: none !important;
+        z-index: 20 !important;
+        box-shadow: none !important;
+        background: var(--bg) !important;
+        border-right: 1px solid var(--divider);
+    }
+
+    html.layout-desktop:not(.transparentDocument)
+        body.libraryDocument:not(.hide-scroll)
+        .mainDrawer-scrollContainer {
+        margin-top: 0.75em;
+        padding-bottom: 5em;
+        font-size: 94%; /* compact nav text; must NOT sit on .mainDrawer
+                             itself or em-based widths would drift */
+    }
+
+    /* Header and pages sit to the right of the sidebar */
+    html.layout-desktop:not(.transparentDocument)
+        body.libraryDocument:not(.hide-scroll)
+        .skinHeader:not(.osdHeader) {
+        left: var(--drawer-width) !important;
+    }
+
+    html.layout-desktop:not(.transparentDocument)
+        body.libraryDocument:not(.hide-scroll)
+        .mainAnimatedPage:not(#videoOsdPage) {
+        left: var(--drawer-width) !important;
+    }
+
+    /* The hamburger and the swipe handle are pointless while pinned */
+    html.layout-desktop:not(.transparentDocument)
+        body.libraryDocument:not(.hide-scroll)
+        .mainDrawerButton,
+    html.layout-desktop:not(.transparentDocument)
+        body.libraryDocument:not(.hide-scroll)
+        .mainDrawerHandle {
+        display: none !important;
+    }
+
+    /* Hide the "My Media" home section — its tiles are the only home cards
+       with data-type="CollectionFolder"; the alternate "library buttons"
+       variant is caught via .homeLibraryButton. Libraries stay reachable
+       through the pinned sidebar. Delete these two rules to keep the row. */
+    html.layout-desktop
+        body.libraryDocument
+        .homeSectionsContainer
+        .verticalSection:has(.card[data-type="CollectionFolder"]),
+    html.layout-desktop
+        body.libraryDocument
+        .homeSectionsContainer
+        .section0:has(.homeLibraryButton) {
+        display: none !important;
+    }
+}
+
+/* ----------------------------------------------------------------------------
+   DASHBOARD / SETTINGS AREA — this is a separate MUI (Material UI) app, NOT
+   the classic layout: its sidebar is a MuiDrawer hardcoded to 240px in JS,
+   and its top bar is a MuiAppBar sized calc(100% - 240px). Resize all of it
+   to --drawer-width so the sidebar stays the same width as on home/library
+   pages. 900px = MUI's 'md' breakpoint, where this drawer becomes permanent;
+   below that it's a temporary overlay we leave alone. The :has() guard skips
+   pages that render no docked drawer (e.g. Metadata Manager), where the app
+   bar is intentionally full-width.
+   ------------------------------------------------------------------------- */
+
+@media all and (min-width: 900px) {
+    body.dashboardDocument .MuiDrawer-docked,
+    body.dashboardDocument .MuiDrawer-docked .MuiDrawer-paper {
+        width: var(--drawer-width) !important;
+    }
+
+    body.dashboardDocument:has(.MuiDrawer-docked) .MuiAppBar-root {
+        width: calc(100% - var(--drawer-width)) !important;
+        margin-left: var(--drawer-width) !important;
+    }
+}
+
+/* Unify the dashboard's surfaces with the rest of the theme */
+body.dashboardDocument .MuiAppBar-root {
+    background-color: var(--bg) !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border-bottom: 1px solid var(--divider) !important;
+}
+
+body.dashboardDocument .MuiDrawer-paper {
+    background-color: var(--bg) !important;
+    background-image: none !important;
+    border-right: 1px solid var(--divider) !important;
+}
+
+/* Older Jellyfin versions (≤10.9) dock a legacy drawer via core CSS instead —
+   harmless on 10.10, kept as a fallback */
+@media all and (min-width: 40em) {
+    body.dashboardDocument .mainDrawer {
+        width: var(--drawer-width) !important;
+    }
+
+    [dir="ltr"] body.dashboardDocument .skinBody {
+        left: var(--drawer-width) !important;
+    }
+}
+
+/* ============================================================================
+   11. HOME PAGE ROWS — "$" prompt section headers, square scroll arrows
+   ========================================================================== */
+
+/* Section titles read as commands: "$ Continue Watching" */
+.sectionTitle {
+    font-size: 1.12em;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-shadow: var(--glow);
+}
+
+.sectionTitle::before {
+    content: "$ ";
+    color: var(--accent);
+}
+
+/* Row titles grow a blinking block cursor on hover: "$ Continue
+   Watching ▋" — hidden when idle, appearing and blinking only while
+   hovering the title area, like the sidebar items. Scoped to
+   .sectionTitle-cards (card-row headers on home, library and detail
+   pages) so plain settings headings get no cursor. The idle cursor is
+   visibility-hidden rather than removed, so it keeps its width and
+   nothing (e.g. the link chevron) shifts when it appears. Keyframes in
+   section 1. */
+.sectionTitle.sectionTitle-cards::after {
+    content: "▋";
+    margin-left: 0.15em;
+    color: var(--accent);
+    visibility: hidden;
+}
+
+.sectionTitleContainer:hover .sectionTitle.sectionTitle-cards::after,
+.sectionTitle.sectionTitle-cards:hover::after {
+    visibility: visible;
+    animation: shellyfin-blink 1.1s steps(1) infinite;
+}
+
+/* Clickable section titles stay phosphor (they are links) — the chevron
+   carries the hover affordance instead */
+a[is="emby-linkbutton"].sectionTitleTextButton,
+a[is="emby-linkbutton"].sectionTitleTextButton .sectionTitle {
+    color: var(--text) !important;
+}
+
+.sectionTitleTextButton > .material-icons {
+    color: var(--text-muted);
+    transition:
+        color 0.15s ease-out,
+        transform 0.15s ease-out;
+}
+
+.sectionTitleTextButton:hover > .material-icons {
+    color: var(--accent-hover);
+    transform: translateX(0.2em);
+}
+
+/* Row scroll arrows: top-right beside the section title — square outlined
+   TUI buttons, inverse video on hover; visible only while hovering the row */
+.emby-scrollbuttons {
+    top: 0;
+    right: 0;
+    left: auto;
+    bottom: auto;
+    min-width: 0;
+    padding-top: 0.3em;
+    z-index: 2;
+    justify-content: flex-end;
+    opacity: 0;
+    transition: opacity 0.15s ease-out;
+}
+
+.emby-scroller-container:hover .emby-scrollbuttons,
+.emby-scrollbuttons:focus-within {
+    opacity: 1;
+}
+
+.emby-scrollbuttons .emby-scrollbuttons-button {
+    position: relative;
+    transform: none;
+    width: 2em;
+    height: 2em;
+    padding: 0;
+    margin: 0 0 0 0.4em;
+    background: transparent;
+    border: 1px solid var(--divider);
+    border-radius: 0;
+    color: var(--text);
+}
+
+/* Center the glyph by pinning it to the geometric center of the square —
+   absolute positioning is immune to the button's flex settings, the icon
+   font's line metrics, and any asymmetric padding in the stock styles */
+.emby-scrollbuttons .emby-scrollbuttons-button > .material-icons {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+}
+
+.emby-scrollbuttons .emby-scrollbuttons-button:hover:not(:disabled) {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--on-accent);
+}
+
+.emby-scrollbuttons .emby-scrollbuttons-button:disabled {
+    opacity: 0.25;
+    pointer-events: none;
+}
+
+/* Continue Watching: the resume meter over the bottom edge of the
+   thumbnail is a row of square cells, ██████░░░░ — same mask trick as
+   the sliders in section 6, dark cells for the track, accent cells for
+   the watched part (foreground color set in section 5). Also covers the
+   resume bar on the detail-page backdrop (.itemBackdropProgressBar). */
+.itemProgressBar {
+    height: 7px;
+    background: rgba(0, 0, 0, 0.55);
+    -webkit-mask-image: repeating-linear-gradient(
+        90deg,
+        #000 0 var(--meter-cell),
+        transparent var(--meter-cell) calc(var(--meter-cell) + var(--meter-gap))
+    );
+    mask-image: repeating-linear-gradient(
+        90deg,
+        #000 0 var(--meter-cell),
+        transparent var(--meter-cell) calc(var(--meter-cell) + var(--meter-gap))
+    );
+}
+
+.innerCardFooterClear {
+    width: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.35));
+}
+
+/* ============================================================================
+   12. ITEM DETAIL PAGES (movies / series) — pre-play layout, phosphor frame
+   ========================================================================== */
+
+/* Hero backdrop: fade the artwork into the page background, so the title
+   block sits on a smooth dark gradient instead of a hard image edge */
+.itemBackdrop::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        180deg,
+        rgba(var(--bg-rgb), 0.25) 0%,
+        rgba(var(--bg-rgb), 0.55) 55%,
+        var(--bg) 100%
+    );
+}
+
+/* Keep the resume progress bar above the fade */
+.itemBackdropProgressBar {
+    z-index: 1;
+}
+
+/* Poster: framed like every panel, floating on a phosphor glow instead of
+   a smoke shadow */
+.detailImageContainer .cardImageContainer,
+.detailImageContainer .cardBox {
+    border-radius: var(--card-radius);
+}
+
+.detailImageContainer .cardImageContainer {
+    border: 1px solid var(--divider);
+    box-shadow: 0 0 30px rgba(var(--accent-rgb), 0.18);
+}
+
+/* Sized-down poster — written for the Jellyfin 10.10/10.11 detail layout,
+   where the poster is a FLOATED in-flow card (width 25vw stock) and the
+   text offset (32.45vw stock) lives on THREE blocks: .detailRibbon (the
+   bar overlaying the backdrop bottom that holds the title, misc info and
+   action buttons), .detailPagePrimaryContent and .detailPageContent —
+   NOT on .detailPagePrimaryContainer; padding that container indents the
+   floated poster too and double-offsets the text. All three must get the
+   SAME offset or the title drifts out of line with the content below.
+   Same stock units (vw), smaller numbers: poster 18vw, text offset
+   poster + 7vw ≈ stock's own gap. Desktop only. */
+html.layout-desktop .detailImageContainer .card {
+    width: var(--detail-poster-width);
+}
+
+html.layout-desktop [dir="ltr"] .detailRibbon,
+html.layout-desktop [dir="ltr"] .detailPagePrimaryContent,
+html.layout-desktop [dir="ltr"] .detailPageContent {
+    padding-left: calc(var(--detail-poster-width) + 7vw);
+}
+
+/* Long titles wrap instead of truncating ("The Mat…") */
+html.layout-desktop .itemName {
+    white-space: normal;
+}
+
+/* Title block: heavy title with a phosphor glow, everything secondary in
+   muted green */
+.itemName {
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-shadow: var(--glow);
+}
+
+/* The item name is MOVED into the top bar as a path — "~/The Matrix" —
+   filling the title slot the detail controller leaves empty
+   (setTitle('')). CSS can't duplicate text, so this is a real move:
+   position:fixed lifts the h1 out of the ribbon and pins it inside the
+   header bar, right after the back button. Movies/series/albums move
+   h1.itemName.parentNameLast; episode and season pages move
+   h1.parentName — the SERIES name, still a clickable link — keeping the
+   episode title in the ribbon. At most one of the two exists per page.
+   Same scoping as the pinned sidebar (section 10): desktop + wide
+   windows only, so narrower layouts keep the stock title placement.
+   z-index 1000 sits above the header bar (999) and below dialogs (same
+   z, painted later). top/left are tuned to the stock header geometry —
+   nudge them if your zoom level disagrees. */
+@media all and (min-width: 64em) {
+    /* Stock gives every page `contain: layout style size` — and layout
+       containment makes the page the containing block AND stacking
+       context for fixed descendants: the moved title would anchor to
+       the page (doubling the sidebar offset) and paint UNDER the header
+       bar, flashing only during view transitions. Lift containment from
+       the detail page so fixed means the viewport again. Stock sets it
+       with !important; html + id wins on specificity. Perf cost is one
+       page losing a paint optimization. */
+    html.layout-desktop #itemDetailPage.mainAnimatedPage {
+        contain: none !important;
+    }
+
+    /* …and .detailRibbon carries z-index: 2 — a positioned element with
+       a z-index is a STACKING CONTEXT, which traps the fixed title at
+       the ribbon's paint level: the header bar (z 999) covers it no
+       matter the title's own z-index. (The title only flashed while the
+       page's lazy-loaded stylesheet hadn't applied yet.) The ribbon
+       doesn't need it here: it stays position:relative and still paints
+       above the backdrop by DOM order, and the floated poster (z 3) was
+       above it anyway. */
+    html.layout-desktop #itemDetailPage .detailRibbon {
+        z-index: auto;
+    }
+
+    html.layout-desktop .nameContainer h1.itemName.parentNameLast,
+    html.layout-desktop .nameContainer h1.parentName {
+        position: fixed;
+        top: 1.25em;
+        left: calc(var(--drawer-width) + 8em);
+        max-width: calc(100vw - var(--drawer-width) - 20em);
+        z-index: 1000;
+        margin: 0;
+        font-size: 1.05em;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-shadow: none;
+    }
+
+    html.layout-desktop .nameContainer h1.itemName.parentNameLast::before,
+    html.layout-desktop .nameContainer h1.parentName::before {
+        content: "~/";
+        color: var(--text-muted);
+        font-weight: 400;
+    }
+}
+
+.parentName,
+.itemMiscInfo,
+.itemMiscInfo .mediaInfoItem {
+    color: var(--text-muted);
+}
+
+/* Quality badges (4K, HDR, CC …) as outlined flags, like CLI switches */
+html .mediaInfoText {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--divider);
+    border-radius: 0;
+}
+
+/* Star rating: lifted out of the busy misc-info line into a framed badge
+   centered UNDER the poster. Anchored to .detailRibbon (the nearest
+   positioned ancestor): the ribbon is pulled up 7.2rem over the backdrop,
+   so the poster's top sits at y = 7.2rem in ribbon coordinates and its
+   bottom at 7.2rem + poster height. Height depends on the card shape, so
+   the move only applies to shapes we can compute: portrait (2:3 — movies,
+   series) and square (1:1 — albums); episodes' backdrop-shaped thumbs
+   keep the rating inline. Desktop + wide windows only, like the rest of
+   the detail layout. */
+@media all and (min-width: 64em) {
+    html.layout-desktop
+        #itemDetailPage:has(.detailImageContainer .portraitCard)
+        .itemMiscInfo
+        .starRatingContainer,
+    html.layout-desktop
+        #itemDetailPage:has(.detailImageContainer .squareCard)
+        .itemMiscInfo
+        .starRatingContainer {
+        position: absolute;
+        left: 3.25%; /* tracks the poster inset, which scales with the window */
+        width: var(--detail-poster-width);
+        margin: 0;
+        padding: 0.4em 0;
+        justify-content: center;
+        background: var(--surface);
+        border: 1px solid var(--divider);
+    }
+
+    /* The trailing term is the gap knob: more negative = closer to the
+       poster's bottom edge */
+    html.layout-desktop
+        #itemDetailPage:has(.detailImageContainer .portraitCard)
+        .itemMiscInfo
+        .starRatingContainer {
+        top: calc(var(--detail-poster-width) * 1.5 - 5.7rem);
+    }
+
+    html.layout-desktop
+        #itemDetailPage:has(.detailImageContainer .squareCard)
+        .itemMiscInfo
+        .starRatingContainer {
+        top: calc(var(--detail-poster-width) - 5.7rem);
+    }
+}
+
+/* The star itself glows phosphor, not gold */
+.starIcon {
+    color: var(--accent);
+}
+
+.tagline {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* Overview: comfortable reading measure */
+.overview {
+    line-height: 1.65;
+    max-width: 70ch;
+}
+
+/* "Genres / Directors / Writers" labels muted; the values are links and
+   pick up the accent from section 1 */
+.detailsGroupItem .label {
+    color: var(--text-muted);
+}
+
+/* Action row: even spacing (stock forces margin: 0 on the buttons) */
+.mainDetailButtons {
+    gap: 0.45em;
+    margin: 1.25em 0 1em;
+}
+
+/* ============================================================================
+   13. SEASON PAGES — episode GRID instead of the stock vertical list.
+   Desktop + wide windows only; mobile/TV keep the stock list.
+   Delete this whole section to restore the list view everywhere.
+
+   Scoping: season pages are the only place where .childrenItemsContainer
+   is filled with Episode LIST items; playlist entries also render as list
+   items but carry data-playlistitemid, so they are excluded and keep
+   their draggable list layout.
+   ========================================================================== */
+
+@media all and (min-width: 64em) {
+    html.layout-desktop
+        .childrenItemsContainer:has(
+            > .listItem[data-type="Episode"]:not([data-playlistitemid])
+        ) {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1.5em 1em;
+        align-items: start;
+    }
+
+    /* Each list row becomes a vertical card */
+    html.layout-desktop
+        .childrenItemsContainer:has(
+            > .listItem[data-type="Episode"]:not([data-playlistitemid])
+        )
+        > .listItem {
+        display: block;
+        padding: 0 !important;
+        border-radius: var(--card-radius);
+        overflow: visible;
+    }
+
+    html.layout-desktop
+        .childrenItemsContainer:has(
+            > .listItem[data-type="Episode"]:not([data-playlistitemid])
+        )
+        > .listItem
+        .listItem-content {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    /* Thumbnail: full card width at 16:9 (stock sizes it in vw for a list
+       row), framed like every panel; the resume progress bar and played
+       badge clip inside the frame */
+    html.layout-desktop
+        .childrenItemsContainer:has(
+            > .listItem[data-type="Episode"]:not([data-playlistitemid])
+        )
+        > .listItem
+        .listItemImage-large {
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 16 / 9;
+        margin: 0 !important;
+        border: 1px solid var(--divider);
+        border-radius: var(--card-radius);
+        overflow: hidden;
+    }
+
+    /* Text under the thumbnail */
+    html.layout-desktop
+        .childrenItemsContainer:has(
+            > .listItem[data-type="Episode"]:not([data-playlistitemid])
+        )
+        > .listItem
+        .listItemBody {
+        padding: 0.6em 0.1em 0 !important;
+        width: 100%;
+    }
+
+    /* Episode synopsis: muted, clamped to 3 lines */
+    html.layout-desktop
+        .childrenItemsContainer:has(
+            > .listItem[data-type="Episode"]:not([data-playlistitemid])
+        )
+        > .listItem
+        .listItem-overview {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        color: var(--text-muted);
+        font-size: 0.9em;
+        margin-top: 0.35em;
+    }
+
+    /* Played/info/menu buttons: only while hovering the card */
+    html.layout-desktop
+        .childrenItemsContainer:has(
+            > .listItem[data-type="Episode"]:not([data-playlistitemid])
+        )
+        > .listItem
+        .listViewUserDataButtons {
+        opacity: 0;
+        transition: opacity 0.15s ease-out;
+    }
+
+    html.layout-desktop
+        .childrenItemsContainer:has(
+            > .listItem[data-type="Episode"]:not([data-playlistitemid])
+        )
+        > .listItem:hover
+        .listViewUserDataButtons,
+    html.layout-desktop
+        .childrenItemsContainer:has(
+            > .listItem[data-type="Episode"]:not([data-playlistitemid])
+        )
+        > .listItem:focus-within
+        .listViewUserDataButtons {
+        opacity: 1;
+    }
+}
+
+/* Center play button on episode thumbnails — stock hovers it blue.
+   Applies in both grid and list mode. */
+.listItemImageButton:hover {
+    color: var(--on-accent);
+    background: rgba(var(--accent-rgb), 0.8);
+}
+
+/* ============================================================================
+   14. ADMIN DASHBOARD — recolor the Material UI components
+   ----------------------------------------------------------------------------
+   The dashboard/settings area is a separate Material-UI (MUI v6) React
+   app; its LAYOUT (sidebar width, app bar / drawer surfaces) is handled
+   at the end of section 10. This section recolors the components inside,
+   which otherwise keep Jellyfin's stock blue. Only MUI's stable slot
+   classes (.MuiButton-*, .Mui-checked, …) are targeted, and only colors
+   and radii are touched — never sizing — so MUI version bumps degrade
+   gracefully. Older dashboard pages still built from classic emby-*
+   controls are already covered by sections 4, 6 and 7. The monospace
+   font comes from the universal rule in section 1.
+
+   MUI injects its styles at runtime, AFTER this file — every rule here
+   outranks them by specificity (body. prefix), with !important only
+   where MUI's own selector carries a state class of equal weight.
+   ========================================================================== */
+
+/* Elevated surfaces (cards, menus, dialogs): one tone, square, no MUI
+   dark-mode "elevation overlay" gradient. The app bar and drawer keep
+   their --bg from section 10, which wins via !important. */
+body.dashboardDocument .MuiPaper-root {
+    background-color: var(--surface);
+    background-image: none;
+    color: var(--text);
+    border-radius: 0;
+}
+
+body.dashboardDocument .MuiDialog-paper {
+    border: 1px solid var(--divider);
+}
+
+/* Sidebar items: same square rows + accent-tinted selected state as the
+   main app's sidebar (section 3) */
+body.dashboardDocument .MuiDrawer-paper .MuiListItemButton-root {
+    margin: 0.1em 0.75em;
+    border-radius: var(--radius);
+}
+
+body.dashboardDocument .MuiListItemButton-root.Mui-selected,
+body.dashboardDocument .MuiMenuItem-root.Mui-selected {
+    background-color: rgba(var(--accent-rgb), 0.18) !important;
+}
+
+/* Buttons — primary actions in inverse video, the rest outlined */
+body.dashboardDocument .MuiButton-root {
+    border-radius: var(--radius);
+}
+
+body.dashboardDocument .MuiButton-containedPrimary {
+    background-color: var(--accent);
+    color: var(--on-accent);
+}
+
+body.dashboardDocument .MuiButton-containedPrimary:hover {
+    background-color: var(--accent-hover);
+}
+
+body.dashboardDocument .MuiButton-textPrimary,
+body.dashboardDocument .MuiButton-outlinedPrimary,
+body.dashboardDocument .MuiIconButton-colorPrimary,
+body.dashboardDocument .MuiLink-root {
+    color: var(--accent-hover);
+}
+
+body.dashboardDocument .MuiButton-outlinedPrimary {
+    border-color: rgba(var(--accent-rgb), 0.5);
+}
+
+body.dashboardDocument .MuiFab-primary {
+    background-color: var(--accent);
+    color: var(--on-accent);
+}
+
+/* Text fields & selects — match section 6's inputs */
+body.dashboardDocument .MuiOutlinedInput-notchedOutline {
+    border-color: var(--divider);
+}
+
+body.dashboardDocument
+    .MuiOutlinedInput-root:hover
+    .MuiOutlinedInput-notchedOutline {
+    border-color: var(--text-muted);
+}
+
+body.dashboardDocument
+    .MuiOutlinedInput-root.Mui-focused
+    .MuiOutlinedInput-notchedOutline {
+    border-color: var(--accent);
+}
+
+body.dashboardDocument .MuiInputLabel-root.Mui-focused,
+body.dashboardDocument .MuiFormLabel-root.Mui-focused {
+    color: var(--accent-hover);
+}
+
+/* Checkboxes, radios, switches — checked = accent */
+body.dashboardDocument .MuiCheckbox-root.Mui-checked,
+body.dashboardDocument .MuiRadio-root.Mui-checked,
+body.dashboardDocument .MuiSwitch-switchBase.Mui-checked {
+    color: var(--accent-hover);
+}
+
+body.dashboardDocument .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track {
+    background-color: var(--accent);
+}
+
+/* Tabs — inverse-video selected tab, like the header tabs (section 2) */
+body.dashboardDocument .MuiTab-root {
+    color: var(--text-muted);
+}
+
+body.dashboardDocument .MuiTab-root.Mui-selected {
+    color: var(--on-accent);
+    background: var(--accent);
+}
+
+body.dashboardDocument .MuiTabs-indicator {
+    background-color: var(--accent);
+}
+
+/* Progress bars & spinners (scheduled tasks, library scan) — cell mask
+   like every other meter (sections 6 and 11); works on MUI's scaleX-
+   animated bar because the mask sits on the container */
+body.dashboardDocument .MuiLinearProgress-root {
+    background-color: rgba(var(--accent-rgb), 0.22);
+    height: 7px;
+    -webkit-mask-image: repeating-linear-gradient(
+        90deg,
+        #000 0 var(--meter-cell),
+        transparent var(--meter-cell) calc(var(--meter-cell) + var(--meter-gap))
+    );
+    mask-image: repeating-linear-gradient(
+        90deg,
+        #000 0 var(--meter-cell),
+        transparent var(--meter-cell) calc(var(--meter-cell) + var(--meter-gap))
+    );
+}
+
+body.dashboardDocument .MuiLinearProgress-bar {
+    background-color: var(--accent);
+}
+
+body.dashboardDocument .MuiCircularProgress-root {
+    color: var(--accent-hover);
+}
+
+/* Table hairlines (users, API keys, activity) from the shared token */
+body.dashboardDocument .MuiTableCell-root {
+    border-bottom-color: var(--divider);
+}
+
+/* Chips and info alerts pick up the accent instead of MUI blue */
+body.dashboardDocument .MuiChip-colorPrimary {
+    background-color: var(--accent);
+    color: var(--on-accent);
+}
+
+body.dashboardDocument .MuiAlert-standardInfo {
+    background-color: rgba(var(--accent-rgb), 0.14);
+    color: var(--text);
+}
+
+body.dashboardDocument .MuiAlert-standardInfo .MuiAlert-icon {
+    color: var(--accent-hover);
+}
+
+/* Legacy dashboard panels on pages not yet ported to MUI */
+html .paperList,
+html .visualCardBox {
+    background: var(--surface);
+}
+
+/* ============================================================================
+   15. LOGIN PAGE — a centered terminal window
+   ----------------------------------------------------------------------------
+   Written for the 10.10/10.11 login view (#loginPage). The page node is an
+   absolutely-positioned plane whose content wrapper carries margin-auto-y —
+   block layout ignores auto vertical margins, so stock just parks the form
+   at the top. Making the page a flex column lets that stock class truly
+   center it. The app header is hidden only while the login view is the
+   ACTIVE view: swapped-out views keep a .hide class (viewContainer.js),
+   so the header returns the moment login completes.
+
+   The wrapper becomes a terminal window: a title bar reading
+   "login@shellyfin:~", a framed body, and the sign-in heading as a shell
+   prompt with a blinking block cursor.
+   ========================================================================== */
+
+body:has(#loginPage:not(.hide)) .skinHeader {
+    display: none !important;
+}
+
+#loginPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 0 !important; /* stock reserves 4.5em for the hidden header */
+    overflow-y: auto;
+    /* faint phosphor bloom at the top of the screen */
+    background: radial-gradient(
+        ellipse 90% 65% at 50% -15%,
+        rgba(var(--accent-rgb), 0.1),
+        transparent 65%
+    );
+}
+
+/* The terminal window. Top padding clears the title bar drawn by the
+   ::before below; the !importants beat .padded-bottom-page's own
+   !important bottom padding (reserved for the music bar — pointless here). */
+#loginPage .padded-bottom-page {
+    position: relative;
+    width: min(34em, 94vw);
+    padding: 3.4em 2em 1.6em !important;
+    background: var(--surface);
+    border: 1px solid var(--divider);
+    box-shadow:
+        0 0 40px rgba(var(--accent-rgb), 0.12),
+        0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* Window title bar */
+#loginPage .padded-bottom-page::before {
+    content: "login@shellyfin:~";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0.45em 0.8em;
+    background: var(--surface-high);
+    border-bottom: 1px solid var(--divider);
+    color: var(--text-muted);
+    font-size: 0.85em;
+    text-align: center;
+}
+
+/* "Please sign in" becomes a prompt line with a blinking block cursor
+   (!important margin beats the inline margin-top on the saved-users
+   variant of the heading; the id outranks the "$ " sectionTitle prefix
+   from section 11 so the prompt isn't doubled) */
+#loginPage h1 {
+    font-size: 1.05em;
+    font-weight: 400;
+    color: var(--text);
+    text-align: left;
+    margin: 0 0 1.6em !important;
+}
+
+#loginPage h1::before {
+    content: "$ ";
+    color: var(--accent);
+}
+
+#loginPage h1::after {
+    content: "▋";
+    margin-left: 0.15em;
+    color: var(--accent);
+    animation: shellyfin-blink 1.1s steps(1) infinite;
+}
+
+/* The manual form centers its heading in a flex row — a prompt belongs at
+   the left edge of the terminal */
+#loginPage .manualLoginForm .flex.justify-content-center {
+    justify-content: flex-start;
+}
+
+/* Type straight onto the screen */
+#loginPage .emby-input {
+    padding: 0.8em 1em;
+}
+
+/* Every block button gets TUI brackets: [ Sign In ] */
+#loginPage .emby-button.block > span::before {
+    content: "[ ";
+    opacity: 0.65;
+}
+
+#loginPage .emby-button.block > span::after {
+    content: " ]";
+    opacity: 0.65;
+}
+
+/* The submit button keeps the inverse video (section 4); every other
+   button on this page (cancel, manual sign-in, Quick Connect, forgot
+   password, change server) becomes a quiet text command */
+#loginPage .emby-button.raised:not(.button-submit) {
+    background: transparent;
+    border-color: transparent;
+    color: var(--text-muted);
+}
+
+#loginPage .emby-button.raised:not(.button-submit):hover {
+    background: var(--hover);
+    border-color: var(--divider);
+    color: var(--text);
+}
+
+#loginPage .button-submit {
+    padding-top: 0.9em;
+    padding-bottom: 0.9em;
+}
+
+/* Saved-user tiles: square framed avatars (the frame comes from .cardBox
+   in section 5), phosphor glow on hover/focus, "@name" below */
+#loginPage #divUsers .cardContent,
+#loginPage #divUsers .cardImageContainer,
+#loginPage #divUsers .cardImage {
+    border-radius: 0;
+    overflow: hidden;
+}
+
+#loginPage #divUsers .card:hover .cardBox,
+#loginPage #divUsers .card:focus .cardBox {
+    border-color: var(--accent);
+    box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.35);
+}
+
+#loginPage #divUsers .cardText::before {
+    content: "@";
+    color: var(--text-muted);
+}
+
+#loginPage #divUsers .cardFooter {
+    background: transparent !important;
+}
+
+/* Server disclaimer as a shell comment */
+#loginPage .loginDisclaimer {
+    color: var(--text-muted);
+    font-size: 0.9em;
+    text-align: left;
+}
+
+#loginPage .loginDisclaimer::before {
+    content: "# ";
+}

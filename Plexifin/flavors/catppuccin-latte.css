@@ -1,0 +1,41 @@
+/* ============================================================================
+   PLEXIFIN FLAVOR — Catppuccin Latte (light)
+   ----------------------------------------------------------------------------
+   Palette: Catppuccin Latte (MIT) — https://github.com/catppuccin/palette
+   Install (Dashboard → General → Custom CSS) — @import the base theme
+   and this file, in that order:
+       @import url("<where-you-host>/theme.css");
+       @import url("<where-you-host>/flavors/catppuccin-latte.css");
+   …or paste this file below the full contents of theme.css. The flavor
+   must load AFTER the base so its :root wins.
+
+   EXPERIMENTAL: the Jellyfin web client (and this theme) are designed
+   dark-first. Latte re-points every token, which covers all themed
+   surfaces, but some stock pieces stay dark by design (video OSD, card
+   hover gradients) and shadows read stronger on a light plane. Keep the
+   Display theme set to "Dark" so the stock CSS underneath stays
+   predictable — this file lays the light colors on top of it.
+   ========================================================================== */
+
+:root {
+    /* Accent — Latte "mauve", dark enough to keep white on-accent text */
+    --accent:         #8839ef;            /* mauve */
+    --accent-rgb:     136, 57, 239;
+    --accent-hover:   #9a57f1;            /* mauve, 15% toward white */
+    --accent-pressed: #7430cb;            /* mauve, 15% toward black */
+    --on-accent:      #ffffff;
+
+    /* Neutrals — light plane, white floating surfaces, crust input fills */
+    --bg:             #eff1f5;            /* base */
+    --bg-rgb:         239, 241, 245;
+    --surface:        #ffffff;
+    --surface-high:   #dce0e8;            /* crust */
+
+    /* Derived neutrals flip to black-alpha on a light plane */
+    --hover:          rgba(0, 0, 0, 0.05);
+    --divider:        rgba(0, 0, 0, 0.09);
+
+    /* Text */
+    --text:           #4c4f69;            /* text */
+    --text-muted:     #6c6f85;            /* subtext0 */
+}

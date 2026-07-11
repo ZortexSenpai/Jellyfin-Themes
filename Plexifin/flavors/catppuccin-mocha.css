@@ -1,0 +1,32 @@
+/* ============================================================================
+   PLEXIFIN FLAVOR — Catppuccin Mocha
+   ----------------------------------------------------------------------------
+   Palette: Catppuccin Mocha (MIT) — https://github.com/catppuccin/palette
+   Install (Dashboard → General → Custom CSS) — @import the base theme
+   and this file, in that order:
+       @import url("<where-you-host>/theme.css");
+       @import url("<where-you-host>/flavors/catppuccin-mocha.css");
+   …or paste this file below the full contents of theme.css. The flavor
+   must load AFTER the base so its :root wins. A flavor only re-points
+   the :root tokens; every layout and component rule lives in theme.css.
+   ========================================================================== */
+
+:root {
+    /* Accent — Mocha "mauve". The pastel accent is light, so text/icons
+       on accent surfaces flip to dark (crust). */
+    --accent:         #cba6f7;            /* mauve */
+    --accent-rgb:     203, 166, 247;
+    --accent-hover:   #d3b3f8;            /* mauve, 15% toward white */
+    --accent-pressed: #ac8dd2;            /* mauve, 15% toward black */
+    --on-accent:      #11111b;            /* crust */
+
+    /* Neutrals */
+    --bg:             #1e1e2e;            /* base */
+    --bg-rgb:         30, 30, 46;
+    --surface:        #313244;            /* surface0 */
+    --surface-high:   #45475a;            /* surface1 */
+
+    /* Text */
+    --text:           #cdd6f4;            /* text */
+    --text-muted:     #a6adc8;            /* subtext0 */
+}

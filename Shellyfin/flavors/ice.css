@@ -1,0 +1,31 @@
+/* ============================================================================
+   SHELLYFIN FLAVOR — Ice (cyan phosphor)
+   ----------------------------------------------------------------------------
+   Install (Dashboard → General → Custom CSS) — @import the base theme
+   and this file, in that order:
+       @import url("<where-you-host>/theme.css");
+       @import url("<where-you-host>/flavors/ice.css");
+   …or paste this file below the full contents of theme.css. The flavor
+   must load AFTER the base so its :root wins. A flavor only re-points
+   the :root tokens; the derived tints (--hover, --divider, --glow)
+   track --accent-rgb automatically.
+   ========================================================================== */
+
+:root {
+    /* Accent — cold cyan phosphor */
+    --accent: #3ddcff;
+    --accent-rgb: 61, 220, 255;
+    --accent-hover: #7de8ff; /* cyan, 15% toward white */
+    --accent-pressed: #2bb8d4; /* cyan, 15% toward black */
+    --on-accent: #021214;
+
+    /* Neutrals — near-black with a cold cast */
+    --bg: #060a0b;
+    --bg-rgb: 6, 10, 11;
+    --surface: #0b1213;
+    --surface-high: #121e20;
+
+    /* Text */
+    --text: #a9ecf5; /* pale ice */
+    --text-muted: #5595a0;
+}

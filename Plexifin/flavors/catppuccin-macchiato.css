@@ -1,0 +1,32 @@
+/* ============================================================================
+   PLEXIFIN FLAVOR — Catppuccin Macchiato
+   ----------------------------------------------------------------------------
+   Palette: Catppuccin Macchiato (MIT) — https://github.com/catppuccin/palette
+   Install (Dashboard → General → Custom CSS) — @import the base theme
+   and this file, in that order:
+       @import url("<where-you-host>/theme.css");
+       @import url("<where-you-host>/flavors/catppuccin-macchiato.css");
+   …or paste this file below the full contents of theme.css. The flavor
+   must load AFTER the base so its :root wins. A flavor only re-points
+   the :root tokens; every layout and component rule lives in theme.css.
+   ========================================================================== */
+
+:root {
+    /* Accent — Macchiato "mauve". The pastel accent is light, so text/icons
+       on accent surfaces flip to dark (crust). */
+    --accent:         #c6a0f6;            /* mauve */
+    --accent-rgb:     198, 160, 246;
+    --accent-hover:   #cfaef7;            /* mauve, 15% toward white */
+    --accent-pressed: #a888d1;            /* mauve, 15% toward black */
+    --on-accent:      #181926;            /* crust */
+
+    /* Neutrals */
+    --bg:             #24273a;            /* base */
+    --bg-rgb:         36, 39, 58;
+    --surface:        #363a4f;            /* surface0 */
+    --surface-high:   #494d64;            /* surface1 */
+
+    /* Text */
+    --text:           #cad3f5;            /* text */
+    --text-muted:     #a5adcb;            /* subtext0 */
+}

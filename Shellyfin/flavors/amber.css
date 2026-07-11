@@ -1,0 +1,31 @@
+/* ============================================================================
+   SHELLYFIN FLAVOR — Amber (VT220 orange phosphor)
+   ----------------------------------------------------------------------------
+   Install (Dashboard → General → Custom CSS) — @import the base theme
+   and this file, in that order:
+       @import url("<where-you-host>/theme.css");
+       @import url("<where-you-host>/flavors/amber.css");
+   …or paste this file below the full contents of theme.css. The flavor
+   must load AFTER the base so its :root wins. A flavor only re-points
+   the :root tokens; the derived tints (--hover, --divider, --glow)
+   track --accent-rgb automatically.
+   ========================================================================== */
+
+:root {
+    /* Accent — classic amber phosphor */
+    --accent: #ffb000;
+    --accent-rgb: 255, 176, 0;
+    --accent-hover: #ffc440; /* amber, 15% toward white */
+    --accent-pressed: #d99600; /* amber, 15% toward black */
+    --on-accent: #120b00;
+
+    /* Neutrals — near-black with a warm cast */
+    --bg: #0a0704;
+    --bg-rgb: 10, 7, 4;
+    --surface: #120d06;
+    --surface-high: #201709;
+
+    /* Text */
+    --text: #f5d7a9; /* pale amber */
+    --text-muted: #ab8552;
+}

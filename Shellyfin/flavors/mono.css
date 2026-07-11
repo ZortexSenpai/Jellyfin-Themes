@@ -1,0 +1,34 @@
+/* ============================================================================
+   SHELLYFIN FLAVOR — Mono (paper-white on black)
+   ----------------------------------------------------------------------------
+   Install (Dashboard → General → Custom CSS) — @import the base theme
+   and this file, in that order:
+       @import url("<where-you-host>/theme.css");
+       @import url("<where-you-host>/flavors/mono.css");
+   …or paste this file below the full contents of theme.css. The flavor
+   must load AFTER the base so its :root wins. A flavor only re-points
+   the :root tokens; the derived tints (--hover, --divider, --glow)
+   track --accent-rgb automatically.
+
+   Tip: this one pairs well with a stronger CRT effect — try
+   --scanline-opacity: 0.25 for the full 1978 experience.
+   ========================================================================== */
+
+:root {
+    /* Accent — bare white phosphor */
+    --accent: #e8e8e8;
+    --accent-rgb: 232, 232, 232;
+    --accent-hover: #ffffff;
+    --accent-pressed: #bdbdbd;
+    --on-accent: #0a0a0a;
+
+    /* Neutrals — pure grayscale */
+    --bg: #070707;
+    --bg-rgb: 7, 7, 7;
+    --surface: #0f0f0f;
+    --surface-high: #1c1c1c;
+
+    /* Text */
+    --text: #d6d6d6;
+    --text-muted: #8a8a8a;
+}
