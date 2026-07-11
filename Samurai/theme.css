@@ -1,0 +1,1502 @@
+/* ============================================================================
+   SAMURAI — a feudal-Japan skin for Jellyfin
+   ----------------------------------------------------------------------------
+   Install: Jellyfin Dashboard → General → Custom CSS → paste this whole file.
+   (Users should have their theme set to "Dark" in Display settings.)
+   Tested against the Jellyfin 10.10 / 10.11 web client.
+
+   Same layout skeleton as Plexifin (pinned sidebar, home rows, pre-play
+   detail pages, episode grid, themed dashboard, centered login) — dressed
+   as lacquerware and washi: sumi-ink neutrals with a warm cast, vermillion
+   (shu) accent, gold maki-e hairlines on every frame, mincho serif type,
+   section titles in 「kagi brackets」, hinomaru play buttons, a subtle
+   seigaiha wave overlay and a login page styled as a hanging scroll,
+   stamped with a red hanko seal.
+
+   All colors are configured in the :root block directly below. Quick
+   dials: --pattern-opacity: 0 kills the seigaiha overlay, --seal sets
+   the character stamped on the login scroll. Other palettes live in
+   flavors/ (aiiro indigo, sakura, matcha, kogane gold) — load one AFTER
+   this file: @import both (base first, flavor second) or paste the
+   flavor below this whole file. See README.md.
+   ========================================================================== */
+
+:root {
+    /* ------------------------------------------------------------------
+       ACCENT — buttons, links, active states, progress bars, checkboxes.
+       Shu vermillion: torii gates, armor lacing, hanko ink. Keep
+       --accent-rgb in sync (used for tints and transparent overlays)
+       and pick a lighter/darker shade for hover/pressed.
+       ------------------------------------------------------------------ */
+    --accent: #c73e3a; /* shinshu vermillion */
+    --accent-rgb: 199, 62, 58; /* --accent as R, G, B */
+    --accent-hover: #d75a52; /* lighter shade, hover states */
+    --accent-pressed: #a32e2c; /* darker shade, pressed states */
+    --on-accent: #fdf6e3; /* washi text on vermillion */
+
+    /* ------------------------------------------------------------------
+       GOLD — the maki-e trim: hairlines/dividers derive from it, star
+       ratings and small flourishes use it directly. Not for buttons.
+       ------------------------------------------------------------------ */
+    --gold: #c9a24b;
+    --gold-rgb: 201, 162, 75; /* --gold as R, G, B */
+
+    /* ------------------------------------------------------------------
+       NEUTRALS — sumi ink over lacquered wood: near-black with a warm
+       cast. bg is the single app plane (page + header + sidebar);
+       surface is for floating elements (menus, dialogs, cards);
+       surface-high for interactive fills (inputs, secondary buttons).
+       ------------------------------------------------------------------ */
+    --bg: #16120e;
+    --bg-rgb: 22, 18, 14; /* --bg as R, G, B */
+    --surface: #1f1a14;
+    --surface-high: #2b241b;
+
+    /* Derived — gold-tinted hairlines (every frame in the theme runs
+       through --divider, like gold leaf on lacquer) and washi hovers */
+    --header-bg: var(--bg);
+    --hover: rgba(253, 246, 227, 0.05);
+    --divider: rgba(var(--gold-rgb), 0.24);
+
+    /* ------------------------------------------------------------------
+       TEXT — washi paper tones
+       ------------------------------------------------------------------ */
+    --text: #efe6d5;
+    --text-muted: #a3937c;
+
+    /* ------------------------------------------------------------------
+       JAPANESE DRESSING
+       ------------------------------------------------------------------ */
+    --font-serif:
+        "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP",
+        "Noto Serif CJK JP", "Source Han Serif JP", Georgia,
+        "Times New Roman", serif;
+    --pattern-opacity: 0.04; /* seigaiha wave overlay; 0 disables */
+    --seal: "侍"; /* character on the login scroll's hanko seal */
+
+    /* ------------------------------------------------------------------
+       SHAPE & LAYOUT
+       ------------------------------------------------------------------ */
+    --radius: 2px; /* buttons, inputs, sidebar items */
+    --card-radius: 2px; /* posters / cards */
+    --detail-poster-width: 18vw; /* poster size on detail pages
+                                             (section 12). Stock is 25vw.
+                                             KEEP THIS IN vw — the whole stock
+                                             detail layout is proportional,
+                                             and fixed px sizes break it */
+    --drawer-width: 280px; /* pinned sidebar width (section 10) —
+                                             keep in px: header, page and drawer
+                                             offsets must match exactly, and em
+                                             would drift with local font sizes */
+    --header-height: 3.8em; /* top bar height = how far the pinned
+                                             sidebar is pushed down (section 10).
+                                             Matches the bar's natural height:
+                                             2×0.54em padding + one icon button
+                                             (24px icon + 2×0.556em padding).
+                                             Small mismatches are invisible —
+                                             header and sidebar share one bg */
+}
+
+/* ============================================================================
+   1. BASE & BACKGROUND — mincho serif everywhere, seigaiha wave overlay
+   ========================================================================== */
+
+/* The mincho serif, everywhere — EXCEPT the icon font, whose glyphs are
+   ligature names rendered through "Material Icons" and would otherwise
+   appear as literal text */
+*:not(.material-icons) {
+    font-family: var(--font-serif) !important;
+}
+
+html {
+    color: var(--text);
+}
+
+.backgroundContainer {
+    background: var(--bg) !important;
+}
+
+/* Item detail pages: dim the backdrop art like ink wash over a print */
+.backgroundContainer.withBackdrop {
+    background: linear-gradient(
+        rgba(var(--bg-rgb), 0.86),
+        rgba(var(--bg-rgb), 0.96)
+    ) !important;
+}
+
+/* Seigaiha (blue-ocean wave) pattern across the whole UI — overlapping
+   scallops of three concentric arcs, drawn as two offset layers of
+   radial-gradient rings in washi ink (set --pattern-opacity: 0 to turn
+   off). Fixed, click-through, and removed while a video plays
+   (body.hide-scroll) so the movie itself stays clean. */
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    pointer-events: none;
+    opacity: var(--pattern-opacity);
+    --wave-line: rgba(239, 230, 213, 0.9);
+    background-image:
+        radial-gradient(
+            circle 24px at 50% 0,
+            transparent 9px,
+            var(--wave-line) 9px 10.5px,
+            transparent 10.5px 16px,
+            var(--wave-line) 16px 17.5px,
+            transparent 17.5px 22.5px,
+            var(--wave-line) 22.5px 24px,
+            transparent 24px
+        ),
+        radial-gradient(
+            circle 24px at 50% 0,
+            transparent 9px,
+            var(--wave-line) 9px 10.5px,
+            transparent 10.5px 16px,
+            var(--wave-line) 16px 17.5px,
+            transparent 17.5px 22.5px,
+            var(--wave-line) 22.5px 24px,
+            transparent 24px
+        );
+    background-size: 48px 24px;
+    background-position:
+        0 0,
+        24px 12px;
+}
+
+body.hide-scroll::after {
+    display: none;
+}
+
+::selection {
+    background: var(--accent);
+    color: var(--on-accent);
+}
+
+/* Kill Jellyfin-blue links (raised link-buttons and sidebar items keep
+   their own colors — accent there is reserved for the selected state) */
+a[is="emby-linkbutton"]:not(.raised):not(.navMenuOption),
+.emby-button.button-link {
+    color: var(--accent-hover) !important;
+}
+
+/* ============================================================================
+   2. TOP BAR (header) — solid, exact same tone as the page, finished with a
+   gold hairline underneath like the edge of a lacquered tray
+   ========================================================================== */
+
+.skinHeader,
+.skinHeader-withBackground,
+.skinHeader.semiTransparent {
+    background: var(--header-bg) !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    color: var(--text);
+    border-bottom: 1px solid var(--divider);
+}
+
+.pageTitle {
+    color: var(--text);
+    letter-spacing: 0.04em;
+}
+
+/* Stock Jellyfin gives the header bar NO horizontal padding below 1600px
+   (100em) — the profile avatar and the left-side buttons sit flush against
+   the window edges on anything smaller than that. Give the bar the same
+   breathing room at every width instead. (The dashboard's MUI toolbar has
+   its own built-in padding and needs no help.) */
+.headerTop {
+    padding: 0.54em 1em;
+}
+
+/* Header tabs (Movies / Suggestions / Genres …) — the active one gets a
+   vermillion brush-stroke underline */
+.emby-tab-button {
+    color: var(--text-muted);
+    opacity: 1;
+    letter-spacing: 0.05em;
+}
+
+.emby-tab-button:hover {
+    color: var(--text);
+}
+
+.emby-tab-button-active,
+.emby-tab-button-active:hover {
+    color: var(--text) !important;
+    box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+/* ============================================================================
+   3. SIDEBAR (drawer) — the selected item gets a vermillion tint and a
+   brush-stroke bar on its left edge, like a banner marked with red ink.
+   As an overlay (narrow screens) it floats on --surface; pinned
+   (section 10) it sits directly on the page background.
+   ========================================================================== */
+
+.mainDrawer {
+    background: var(--surface) !important;
+}
+
+.navMenuOption {
+    margin: 0.1em 0.75em;
+    border-radius: var(--radius);
+    color: var(--text-muted);
+}
+
+.navMenuOption:hover {
+    background: var(--hover);
+    color: var(--text);
+}
+
+.navMenuOption-selected,
+.navMenuOption-selected:hover {
+    background: rgba(var(--accent-rgb), 0.16) !important;
+    box-shadow: inset 3px 0 0 var(--accent);
+    color: var(--text) !important;
+}
+
+.navMenuOption-selected .navMenuOptionIcon {
+    color: var(--accent-hover);
+}
+
+.sidebarHeader {
+    color: var(--text-muted);
+    font-size: 0.8em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+}
+
+/* ============================================================================
+   4. BUTTONS
+   ========================================================================== */
+
+/* Raised (secondary) buttons — lacquered wood */
+.emby-button.raised {
+    background: var(--surface-high);
+    color: var(--text);
+    border-radius: var(--radius);
+    letter-spacing: 0.04em;
+}
+
+.emby-button.raised:hover {
+    filter: brightness(1.15);
+}
+
+/* Primary / submit buttons → vermillion */
+.emby-button.raised.button-submit,
+.button-submit {
+    background: var(--accent) !important;
+    color: var(--on-accent) !important;
+}
+
+.emby-button.raised.button-submit:hover,
+.button-submit:hover {
+    background: var(--accent-hover) !important;
+    filter: none;
+}
+
+.emby-button.raised.button-submit:active,
+.button-submit:active {
+    background: var(--accent-pressed) !important;
+}
+
+/* Floating action button (e.g. "+" on dashboard pages) */
+.fab {
+    background: var(--accent) !important;
+    color: var(--on-accent) !important;
+}
+
+.fab:hover {
+    background: var(--accent-hover) !important;
+}
+
+/* Icon buttons (header, player controls, card menus) */
+.paper-icon-button-light:hover:not(:disabled) {
+    color: var(--accent-hover);
+    background: rgba(var(--accent-rgb), 0.16);
+}
+
+.paper-icon-button-light.show-focus:focus {
+    color: var(--accent-hover);
+}
+
+/* Detail page action row — CIRCULAR icon buttons; Play becomes a hinomaru,
+   the red sun disc. Stock styles force their own padding with !important,
+   so the circle is sized explicitly (fixed width/height, padding 0); the
+   html prefix outranks theme.css, which Jellyfin loads AFTER this custom
+   CSS (see note in section 6). */
+html .detailButton {
+    background: var(--surface-high);
+    color: var(--text);
+    border-radius: 50%;
+    width: 2.9em;
+    height: 2.9em;
+    padding: 0 !important;
+    flex-shrink: 0;
+    transition:
+        background 0.1s ease-out,
+        transform 0.1s ease-out;
+}
+
+html .detailButton:hover {
+    filter: brightness(1.15);
+}
+
+html .detailButton.btnPlay {
+    background: var(--accent) !important;
+    color: var(--on-accent) !important;
+}
+
+html .detailButton.btnPlay:hover {
+    background: var(--accent-hover) !important;
+    filter: none;
+    transform: scale(1.06);
+}
+
+/* Active toggles (Played ✓, Favorite ♥) — theme.css paints these blue */
+html .emby-button.buttonActive {
+    color: var(--accent-hover) !important;
+}
+
+/* ============================================================================
+   5. CARDS / POSTERS — framed prints: a gold hairline that brightens on
+   hover, like maki-e trim catching the light
+   ========================================================================== */
+
+.cardBox {
+    border-radius: var(--card-radius);
+    border: 1px solid var(--divider);
+    background: var(--surface);
+    transition: border-color 0.12s ease-out;
+}
+
+.cardBox:hover {
+    border-color: rgba(var(--gold-rgb), 0.55);
+}
+
+.cardImageContainer,
+.cardPadder,
+.cardContent,
+.chapterCard,
+.cardImage {
+    border-radius: var(--card-radius);
+}
+
+/* Hover overlay: darken bottom, hinomaru play button */
+.cardOverlayContainer {
+    border-radius: var(--card-radius);
+    background: linear-gradient(rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.75) 100%);
+}
+
+.cardOverlayFab-primary {
+    background: rgba(var(--accent-rgb), 0.9) !important;
+    color: var(--on-accent) !important;
+    transition:
+        transform 0.1s ease-out,
+        background 0.1s ease-out;
+}
+
+.cardOverlayFab-primary:hover {
+    background: var(--accent) !important;
+    transform: scale(1.08);
+}
+
+.cardOverlayButton:hover {
+    color: var(--accent-hover);
+}
+
+/* Card captions: left-aligned, muted second line */
+.cardText {
+    text-align: left;
+    color: var(--text);
+}
+
+.cardText-secondary {
+    color: var(--text-muted) !important;
+}
+
+/* Watched checkmark / episode count — round vermillion seals */
+.playedIndicator,
+.countIndicator {
+    background: var(--accent) !important;
+    color: var(--on-accent) !important;
+}
+
+/* Multiple-versions count (top-left of a card) — stock paints it blue;
+   gilded here so it doesn't read as a second watched seal */
+.mediaSourceIndicator {
+    background: var(--gold) !important;
+    color: var(--bg) !important;
+}
+
+/* Tiles without artwork (cast & crew, fresh libraries) — stock assigns
+   one of five bright random colors; re-dyed in muted traditional
+   pigments: indigo, plum, bengara rust, pine, ochre. The html prefix
+   outranks Jellyfin's runtime theme.css (see note in section 6). */
+html .defaultCardBackground1 {
+    background-color: #33566b; /* ai — indigo */
+}
+
+html .defaultCardBackground2 {
+    background-color: #5c4a63; /* murasaki — plum */
+}
+
+html .defaultCardBackground3 {
+    background-color: #8f3e2e; /* bengara — iron rust */
+}
+
+html .defaultCardBackground4 {
+    background-color: #4e6b48; /* matsuba — pine needle */
+}
+
+html .defaultCardBackground5 {
+    background-color: #8a6d2f; /* ōdo — ochre */
+}
+
+.itemProgressBarForeground {
+    background-color: var(--accent) !important;
+}
+
+/* Section headings — full bracket treatment lives in section 11 */
+.sectionTitle {
+    color: var(--text);
+}
+
+/* ============================================================================
+   6. FORMS — inputs, selects, checkboxes, sliders
+   ========================================================================== */
+
+/* NOTE: Jellyfin appends theme.css to <body> at runtime, AFTER this custom
+   CSS — equal-specificity rules lose to it no matter what. The `html`
+   prefix on the rules below adds just enough specificity to always win. */
+
+html .emby-input,
+html .emby-textarea,
+html select.emby-select,
+html .emby-select-withcolor {
+    background: var(--surface-high) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--divider) !important;
+    border-radius: var(--radius) !important;
+}
+
+html .emby-input:focus,
+html .emby-textarea:focus,
+html select.emby-select:focus,
+html .emby-select-withcolor:focus {
+    border-color: var(--accent) !important;
+}
+
+/* The dropdown list itself (theme.css paints options #222) */
+html select.emby-select > option,
+html .emby-select-withcolor > option {
+    background: var(--surface);
+    color: var(--text);
+}
+
+/* Select labels and the dropdown arrow */
+html .selectLabel {
+    color: var(--text-muted);
+}
+
+html .selectArrowContainer {
+    color: var(--text-muted);
+}
+
+.inputLabelFocused,
+.selectLabelFocused,
+.textareaLabelFocused {
+    color: var(--accent-hover);
+}
+
+/* Checkboxes */
+html .emby-checkbox:checked + span + .checkboxOutline {
+    background-color: var(--accent);
+    border-color: var(--accent);
+}
+
+html .emby-checkbox:focus:not(:checked) + span + .checkboxOutline {
+    border-color: var(--accent-hover);
+}
+
+.checkboxIcon {
+    color: var(--on-accent);
+}
+
+/* Sliders (seek bar, volume, brightness) */
+.mdl-slider-background-lower,
+.emby-slider-background-lower {
+    background-color: var(--accent) !important;
+}
+
+input[is="emby-slider"]::-webkit-slider-thumb {
+    background: var(--accent-hover) !important;
+}
+
+input[is="emby-slider"]::-moz-range-thumb {
+    background: var(--accent-hover) !important;
+}
+
+/* ============================================================================
+   7. DIALOGS, MENUS, LISTS — floating lacquer trays with gold edges
+   ========================================================================== */
+
+.dialog,
+.actionSheet {
+    background: var(--surface) !important;
+    border: 1px solid var(--divider);
+    border-radius: calc(var(--radius) * 2);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+}
+
+.formDialogHeader:not(.formDialogHeader-clear) {
+    background: var(--surface) !important;
+    border-bottom: 1px solid var(--divider);
+    color: var(--text);
+}
+
+.formDialogFooter:not(.formDialogFooter-clear) {
+    background: var(--surface) !important;
+    border-top: 1px solid var(--divider);
+    color: var(--text);
+}
+
+/* Neutral hover in menus/lists — accent is reserved for selected/active */
+.actionSheetMenuItem:hover {
+    background: var(--hover) !important;
+}
+
+.listItem:hover {
+    background: var(--hover);
+}
+
+.listItemBodyText-secondary {
+    color: var(--text-muted) !important;
+}
+
+/* Loading spinner */
+.mdl-spinner__layer-1,
+.mdl-spinner__layer-2,
+.mdl-spinner__layer-3,
+.mdl-spinner__layer-4 {
+    border-color: var(--accent) !important;
+}
+
+/* ============================================================================
+   8. VIDEO PLAYER (OSD)
+   ========================================================================== */
+
+.videoOsdBottom {
+    background: linear-gradient(
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.85) 100%
+    ) !important;
+}
+
+.osdTimeText {
+    color: var(--text);
+}
+
+.upNextDialog-countdownText {
+    color: var(--accent-hover);
+}
+
+/* ============================================================================
+   9. SCROLLBARS
+   ========================================================================== */
+
+html {
+    scrollbar-color: var(--surface-high) transparent;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--surface-high);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--accent-rgb), 0.6);
+}
+
+/* ============================================================================
+   10. LAYOUT — FULL-WIDTH HEADER + PINNED SIDEBAR (home & library pages,
+   wide screens)
+   ----------------------------------------------------------------------------
+   On desktop windows wider than ~1024px the top bar spans the full window
+   with the logo parked in its far-left corner, the navigation drawer is
+   pinned open BELOW the bar, content shifts right, and the "My Media"
+   tile row disappears from Home (your libraries live in the sidebar
+   instead). Narrower windows, mobile, TV layout and video playback all
+   fall back to stock behavior.
+
+   Change the sidebar width via --drawer-width and the bar height via
+   --header-height in the config block.
+   Delete this whole section if you prefer the stock hamburger drawer.
+
+   Scoping notes:
+     html.layout-desktop          → only the desktop layout, never TV/mobile
+     html:not(.transparentDocument) → not on the video OSD / queue screens
+     body.libraryDocument         → only home/library/detail pages
+     body:not(.hide-scroll)       → never while a video is playing
+   ========================================================================== */
+
+@media all and (min-width: 64em) {
+    /* Pin the drawer BELOW the top bar (overrides the inline left/transform
+       set by JS; stock anchors bottom: 0, so offsetting top is enough).
+       Same tone as the page so it still reads as one plane, but OPAQUE and
+       stacked above the page content — horizontally scrolling card rows can
+       paint past the page edge, and must never show over or through the nav.
+       z-index 20 keeps it below the header (999) and dialogs (1000+). */
+    html.layout-desktop:not(.transparentDocument)
+        body.libraryDocument:not(.hide-scroll)
+        .mainDrawer {
+        display: flex !important;
+        left: 0 !important;
+        top: var(--header-height) !important;
+        width: var(--drawer-width) !important;
+        transform: none !important;
+        z-index: 20 !important;
+        box-shadow: none !important;
+        background: var(--bg) !important;
+    }
+
+    html.layout-desktop:not(.transparentDocument)
+        body.libraryDocument:not(.hide-scroll)
+        .mainDrawer-scrollContainer {
+        margin-top: 0.75em;
+        padding-bottom: 5em;
+        font-size: 94%; /* compact nav text; must NOT sit on .mainDrawer
+                             itself or em-based widths would drift */
+    }
+
+    /* The header keeps its stock full-window width (left: 0) and sits above
+       the sidebar; only the pages shift right */
+    html.layout-desktop:not(.transparentDocument)
+        body.libraryDocument:not(.hide-scroll)
+        .mainAnimatedPage:not(#videoOsdPage) {
+        left: var(--drawer-width) !important;
+    }
+
+    /* Home-page logo moves to the far LEFT of the bar, into the corner above
+       the sidebar. Only the logo variant of the page title moves (flex
+       order; the buttons come first in the DOM); text titles keep their
+       stock spot after the back/home buttons.
+
+       The logo is drawn slightly SMALLER than its box (1.55em in a 2em box)
+       so there is slack to nudge it around without anything clipping —
+       wordmark descenders make a mathematically centered logo read as
+       sitting too high. background-position holds both nudges: 0.75em in
+       from the box's left edge, and 0.15em down from dead center (up to
+       ±0.22em stays inside the box vertically; the box is far wider than
+       the logo, so there's ample sideways room). Offsetting the ELEMENT
+       instead (position/margin) would clip: .headerLeft is overflow:
+       hidden and exactly as tall as its content. */
+    html.layout-desktop:not(.transparentDocument)
+        body.libraryDocument:not(.hide-scroll)
+        .headerLeft
+        .pageTitle.pageTitleWithLogo {
+        order: -1;
+        margin-inline: 0 0.5em;
+        height: 2em;
+        background-size: auto 1.55em;
+        background-position: 0.75em calc(50% + 0.15em);
+    }
+
+    /* With the sidebar tucked below it the bar must stay a SINGLE row, so
+       the tab strip (Movies / Suggestions / …) overlays the bar, centered.
+       Stock only folds the tabs up on ≥100em screens (via a fixed -4.3em
+       margin); absolute centering does the same job at every pinned width
+       and any bar height. Taken out of the flow, the tabs also no longer
+       add a second header row that would cover the top of the sidebar. */
+    html.layout-desktop:not(.transparentDocument)
+        body.libraryDocument:not(.hide-scroll)
+        .skinHeader:not(.osdHeader)
+        .headerTabs {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: auto;
+        margin: 0;
+    }
+
+    /* Pages normally reserve top padding for the stock TWO-row header below
+       100em; with the tabs folded into the bar, stock's own ≥100em single-row
+       values are the right reserve at every pinned width. */
+    html.layout-desktop:not(.transparentDocument)
+        body.libraryDocument:not(.hide-scroll)
+        .libraryPage:not(.noSecondaryNavPage) {
+        padding-top: 4.6em !important;
+    }
+
+    html.layout-desktop:not(.transparentDocument)
+        body.libraryDocument:not(.hide-scroll)
+        .pageWithAbsoluteTabs:not(.noSecondaryNavPage) {
+        padding-top: 6.7em !important;
+    }
+
+    html.layout-desktop:not(.transparentDocument)
+        body.libraryDocument:not(.hide-scroll)
+        .absolutePageTabContent {
+        top: 5.7em !important;
+    }
+
+    /* The hamburger and the swipe handle are pointless while pinned */
+    html.layout-desktop:not(.transparentDocument)
+        body.libraryDocument:not(.hide-scroll)
+        .mainDrawerButton,
+    html.layout-desktop:not(.transparentDocument)
+        body.libraryDocument:not(.hide-scroll)
+        .mainDrawerHandle {
+        display: none !important;
+    }
+
+    /* Hide the "My Media" home section — its tiles are the only home cards
+       with data-type="CollectionFolder"; the alternate "library buttons"
+       variant is caught via .homeLibraryButton. Libraries stay reachable
+       through the pinned sidebar. Delete these two rules to keep the row. */
+    html.layout-desktop
+        body.libraryDocument
+        .homeSectionsContainer
+        .verticalSection:has(.card[data-type="CollectionFolder"]),
+    html.layout-desktop
+        body.libraryDocument
+        .homeSectionsContainer
+        .section0:has(.homeLibraryButton) {
+        display: none !important;
+    }
+}
+
+/* ----------------------------------------------------------------------------
+   DASHBOARD / SETTINGS AREA — this is a separate MUI (Material UI) app, NOT
+   the classic layout: its sidebar is a MuiDrawer hardcoded to 240px in JS,
+   and its top bar is a MuiAppBar sized calc(100% - 240px) beside it. Match
+   the main app's geometry instead: the app bar spans the full window and
+   the sidebar (resized to --drawer-width) tucks below it. 64px = MUI's
+   fixed desktop toolbar height (px-based, independent of the em scale).
+   900px = MUI's 'md' breakpoint, where this drawer becomes permanent;
+   below that it's a temporary overlay we leave alone. The :has() guard
+   skips pages that render no docked drawer (e.g. Metadata Manager), where
+   the app bar is intentionally full-width already.
+   ------------------------------------------------------------------------- */
+
+@media all and (min-width: 900px) {
+    body.dashboardDocument .MuiDrawer-docked,
+    body.dashboardDocument .MuiDrawer-docked .MuiDrawer-paper {
+        width: var(--drawer-width) !important;
+    }
+
+    body.dashboardDocument .MuiDrawer-docked .MuiDrawer-paper {
+        top: 64px !important;
+        height: calc(100% - 64px) !important;
+    }
+
+    body.dashboardDocument:has(.MuiDrawer-docked) .MuiAppBar-root {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+}
+
+/* Unify the dashboard's surfaces with the rest of the theme */
+body.dashboardDocument .MuiAppBar-root {
+    background-color: var(--bg) !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border-bottom: 1px solid var(--divider) !important;
+}
+
+body.dashboardDocument .MuiDrawer-paper {
+    background-color: var(--bg) !important;
+    background-image: none !important;
+    border-right: none !important;
+}
+
+/* Older Jellyfin versions (≤10.9) dock a legacy drawer via core CSS instead —
+   harmless on 10.10, kept as a fallback */
+@media all and (min-width: 40em) {
+    body.dashboardDocument .mainDrawer {
+        width: var(--drawer-width) !important;
+    }
+
+    [dir="ltr"] body.dashboardDocument .skinBody {
+        left: var(--drawer-width) !important;
+    }
+}
+
+/* ============================================================================
+   11. HOME PAGE ROWS — section titles in 「kagi brackets」, round scroll
+   arrows, vermillion progress
+   ========================================================================== */
+
+/* Section titles: mincho semibold with generous tracking */
+.sectionTitle {
+    font-size: 1.12em;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+/* Card-row titles are set in vermillion kagi brackets: 「Continue Watching」.
+   Scoped to .sectionTitle-cards (card-row headers on home, library and
+   detail pages) so plain settings headings stay unadorned. The CJK open
+   bracket carries its whitespace on the LEFT of the glyph — the negative
+   margin pulls it back so the visible stroke lines up with the row edge
+   and the title text doesn't drift right of the cards below it. */
+.sectionTitle.sectionTitle-cards::before {
+    content: "「";
+    color: var(--accent);
+    margin-left: -0.45em;
+}
+
+.sectionTitle.sectionTitle-cards::after {
+    content: "」";
+    color: var(--accent);
+}
+
+/* Clickable section titles stay washi-white (they are links) — the chevron
+   carries the hover affordance instead */
+a[is="emby-linkbutton"].sectionTitleTextButton,
+a[is="emby-linkbutton"].sectionTitleTextButton .sectionTitle {
+    color: var(--text) !important;
+}
+
+.sectionTitleTextButton > .material-icons {
+    color: var(--text-muted);
+    transition:
+        color 0.15s ease-out,
+        transform 0.15s ease-out;
+}
+
+.sectionTitleTextButton:hover > .material-icons {
+    color: var(--accent-hover);
+    transform: translateX(0.2em);
+}
+
+/* Row scroll arrows: top-right beside the section title — compact circles
+   explicitly sized to the tighter title row so they can't reach down into
+   the cards; visible only while hovering the row */
+.emby-scrollbuttons {
+    top: 0;
+    right: 0;
+    left: auto;
+    bottom: auto;
+    min-width: 0;
+    padding-top: 0.3em;
+    z-index: 2;
+    justify-content: flex-end;
+    opacity: 0;
+    transition: opacity 0.15s ease-out;
+}
+
+.emby-scroller-container:hover .emby-scrollbuttons,
+.emby-scrollbuttons:focus-within {
+    opacity: 1;
+}
+
+.emby-scrollbuttons .emby-scrollbuttons-button {
+    position: relative;
+    transform: none;
+    width: 2em;
+    height: 2em;
+    padding: 0;
+    margin: 0 0 0 0.4em;
+    background: var(--surface-high);
+    border-radius: 50%;
+    color: var(--text);
+}
+
+/* Center the glyph by pinning it to the geometric center of the circle —
+   absolute positioning is immune to the button's flex settings, the icon
+   font's line metrics, and any asymmetric padding in the stock styles */
+.emby-scrollbuttons .emby-scrollbuttons-button > .material-icons {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+}
+
+.emby-scrollbuttons .emby-scrollbuttons-button:hover:not(:disabled) {
+    background: var(--accent);
+    color: var(--on-accent);
+}
+
+.emby-scrollbuttons .emby-scrollbuttons-button:disabled {
+    opacity: 0.25;
+    pointer-events: none;
+}
+
+/* Continue Watching: thin vermillion progress line over the bottom edge of
+   the thumbnail (foreground color is set in section 5), on a soft fade */
+.itemProgressBar {
+    height: 4px;
+    background: rgba(0, 0, 0, 0.55);
+}
+
+.innerCardFooterClear {
+    width: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.35));
+}
+
+/* ============================================================================
+   12. ITEM DETAIL PAGES (movies / series) — pre-play layout, gold-framed
+   poster, gold star ratings
+   ========================================================================== */
+
+/* Hero backdrop: fade the artwork into the page background, so the title
+   block sits on a smooth ink gradient instead of a hard image edge */
+.itemBackdrop::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        180deg,
+        rgba(var(--bg-rgb), 0.15) 0%,
+        rgba(var(--bg-rgb), 0.45) 55%,
+        var(--bg) 100%
+    );
+}
+
+/* Keep the resume progress bar above the fade */
+.itemBackdropProgressBar {
+    z-index: 1;
+}
+
+/* Poster: framed like every print, floating on a deep shadow */
+.detailImageContainer .cardImageContainer,
+.detailImageContainer .cardBox {
+    border-radius: calc(var(--card-radius) + 2px);
+}
+
+.detailImageContainer .cardImageContainer {
+    border: 1px solid var(--divider);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+}
+
+/* Sized-down poster — written for the Jellyfin 10.10/10.11 detail layout,
+   where the poster is a FLOATED in-flow card (width 25vw stock) and the
+   text offset (32.45vw stock) lives on THREE blocks: .detailRibbon (the
+   bar overlaying the backdrop bottom that holds the title, misc info and
+   action buttons), .detailPagePrimaryContent and .detailPageContent —
+   NOT on .detailPagePrimaryContainer; padding that container indents the
+   floated poster too and double-offsets the text. All three must get the
+   SAME offset or the title drifts out of line with the content below.
+   Same stock units (vw), smaller numbers: poster 18vw, text offset
+   poster + 7vw ≈ stock's own gap. Desktop only. */
+html.layout-desktop .detailImageContainer .card {
+    width: var(--detail-poster-width);
+}
+
+html.layout-desktop [dir="ltr"] .detailRibbon,
+html.layout-desktop [dir="ltr"] .detailPagePrimaryContent,
+html.layout-desktop [dir="ltr"] .detailPageContent {
+    padding-left: calc(var(--detail-poster-width) + 7vw);
+}
+
+/* Long titles wrap instead of truncating ("The Mat…") */
+html.layout-desktop .itemName {
+    white-space: normal;
+}
+
+/* Title block: heavy mincho title, everything secondary in muted washi */
+.itemName {
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.parentName,
+.itemMiscInfo,
+.itemMiscInfo .mediaInfoItem {
+    color: var(--text-muted);
+}
+
+/* Quality badges (4K, HDR, CC …) as quiet gold-edged chips */
+html .mediaInfoText {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--divider);
+    border-radius: var(--radius);
+}
+
+/* The star rating is gilded, not Jellyfin-yellow */
+.starIcon {
+    color: var(--gold);
+}
+
+.tagline {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* Overview: comfortable reading measure — serif likes a little more air */
+.overview {
+    line-height: 1.75;
+    max-width: 70ch;
+}
+
+/* "Genres / Directors / Writers" labels muted; the values are links and
+   pick up the accent from section 1 */
+.detailsGroupItem .label {
+    color: var(--text-muted);
+}
+
+/* Action row: even spacing (stock forces margin: 0 on the buttons) */
+.mainDetailButtons {
+    gap: 0.45em;
+    margin: 1.25em 0 1em;
+}
+
+/* ============================================================================
+   13. SEASON PAGES — episode GRID instead of the stock vertical list.
+   Desktop + wide windows only; mobile/TV keep the stock list.
+   Delete this whole section to restore the list view everywhere.
+
+   Scoping: season pages are the only place where .childrenItemsContainer
+   is filled with Episode LIST items; playlist entries also render as list
+   items but carry data-playlistitemid, so they are excluded and keep
+   their draggable list layout.
+   ========================================================================== */
+
+@media all and (min-width: 64em) {
+    html.layout-desktop
+        .childrenItemsContainer:has(
+            > .listItem[data-type="Episode"]:not([data-playlistitemid])
+        ) {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1.5em 1em;
+        align-items: start;
+    }
+
+    /* Each list row becomes a vertical card */
+    html.layout-desktop
+        .childrenItemsContainer:has(
+            > .listItem[data-type="Episode"]:not([data-playlistitemid])
+        )
+        > .listItem {
+        display: block;
+        padding: 0 !important;
+        border-radius: var(--card-radius);
+        overflow: visible;
+    }
+
+    html.layout-desktop
+        .childrenItemsContainer:has(
+            > .listItem[data-type="Episode"]:not([data-playlistitemid])
+        )
+        > .listItem
+        .listItem-content {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    /* Thumbnail: full card width at 16:9 (stock sizes it in vw for a list
+       row), framed like every print; the resume progress bar and played
+       badge clip inside the frame */
+    html.layout-desktop
+        .childrenItemsContainer:has(
+            > .listItem[data-type="Episode"]:not([data-playlistitemid])
+        )
+        > .listItem
+        .listItemImage-large {
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 16 / 9;
+        margin: 0 !important;
+        border: 1px solid var(--divider);
+        border-radius: var(--card-radius);
+        overflow: hidden;
+    }
+
+    /* Text under the thumbnail */
+    html.layout-desktop
+        .childrenItemsContainer:has(
+            > .listItem[data-type="Episode"]:not([data-playlistitemid])
+        )
+        > .listItem
+        .listItemBody {
+        padding: 0.6em 0.1em 0 !important;
+        width: 100%;
+    }
+
+    /* Episode synopsis: muted, clamped to 3 lines */
+    html.layout-desktop
+        .childrenItemsContainer:has(
+            > .listItem[data-type="Episode"]:not([data-playlistitemid])
+        )
+        > .listItem
+        .listItem-overview {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        color: var(--text-muted);
+        font-size: 0.9em;
+        margin-top: 0.35em;
+    }
+
+    /* Played/info/menu buttons: only while hovering the card */
+    html.layout-desktop
+        .childrenItemsContainer:has(
+            > .listItem[data-type="Episode"]:not([data-playlistitemid])
+        )
+        > .listItem
+        .listViewUserDataButtons {
+        opacity: 0;
+        transition: opacity 0.15s ease-out;
+    }
+
+    html.layout-desktop
+        .childrenItemsContainer:has(
+            > .listItem[data-type="Episode"]:not([data-playlistitemid])
+        )
+        > .listItem:hover
+        .listViewUserDataButtons,
+    html.layout-desktop
+        .childrenItemsContainer:has(
+            > .listItem[data-type="Episode"]:not([data-playlistitemid])
+        )
+        > .listItem:focus-within
+        .listViewUserDataButtons {
+        opacity: 1;
+    }
+}
+
+/* Center play button on episode thumbnails — stock hovers it blue.
+   Applies in both grid and list mode. */
+.listItemImageButton:hover {
+    color: var(--on-accent);
+    background: rgba(var(--accent-rgb), 0.8);
+}
+
+/* ============================================================================
+   14. ADMIN DASHBOARD — recolor the Material UI components
+   ----------------------------------------------------------------------------
+   The dashboard/settings area is a separate Material-UI (MUI v6) React
+   app; its LAYOUT (sidebar width, app bar / drawer surfaces) is handled
+   at the end of section 10. This section recolors the components inside,
+   which otherwise keep Jellyfin's stock blue. Only MUI's stable slot
+   classes (.MuiButton-*, .Mui-checked, …) are targeted, and only colors
+   and radii are touched — never sizing — so MUI version bumps degrade
+   gracefully. Older dashboard pages still built from classic emby-*
+   controls are already covered by sections 4, 6 and 7. The serif font
+   comes from the universal rule in section 1.
+
+   MUI injects its styles at runtime, AFTER this file — every rule here
+   outranks them by specificity (body. prefix), with !important only
+   where MUI's own selector carries a state class of equal weight.
+   ========================================================================== */
+
+/* Elevated surfaces (cards, menus, dialogs): one tone, and kill MUI's
+   dark-mode "elevation overlay" gradient. The app bar and drawer keep
+   their --bg from section 10, which wins via !important. */
+body.dashboardDocument .MuiPaper-root {
+    background-color: var(--surface);
+    background-image: none;
+    color: var(--text);
+}
+
+body.dashboardDocument .MuiDialog-paper {
+    border: 1px solid var(--divider);
+    border-radius: calc(var(--radius) * 2);
+}
+
+/* Sidebar items: same rounded row + vermillion selected state as the
+   main app's sidebar (section 3) */
+body.dashboardDocument .MuiDrawer-paper .MuiListItemButton-root {
+    margin: 0.1em 0.75em;
+    border-radius: var(--radius);
+}
+
+body.dashboardDocument .MuiListItemButton-root.Mui-selected,
+body.dashboardDocument .MuiMenuItem-root.Mui-selected {
+    background-color: rgba(var(--accent-rgb), 0.16) !important;
+    box-shadow: inset 3px 0 0 var(--accent);
+}
+
+/* Buttons — primary actions in vermillion, secondary emphasis stays quiet */
+body.dashboardDocument .MuiButton-root {
+    border-radius: var(--radius);
+}
+
+body.dashboardDocument .MuiButton-containedPrimary {
+    background-color: var(--accent);
+    color: var(--on-accent);
+}
+
+body.dashboardDocument .MuiButton-containedPrimary:hover {
+    background-color: var(--accent-hover);
+}
+
+body.dashboardDocument .MuiButton-textPrimary,
+body.dashboardDocument .MuiButton-outlinedPrimary,
+body.dashboardDocument .MuiIconButton-colorPrimary,
+body.dashboardDocument .MuiLink-root {
+    color: var(--accent-hover);
+}
+
+body.dashboardDocument .MuiButton-outlinedPrimary {
+    border-color: rgba(var(--accent-rgb), 0.5);
+}
+
+body.dashboardDocument .MuiFab-primary {
+    background-color: var(--accent);
+    color: var(--on-accent);
+}
+
+/* Text fields & selects — match section 6's inputs */
+body.dashboardDocument .MuiOutlinedInput-notchedOutline {
+    border-color: var(--divider);
+}
+
+body.dashboardDocument
+    .MuiOutlinedInput-root:hover
+    .MuiOutlinedInput-notchedOutline {
+    border-color: var(--text-muted);
+}
+
+body.dashboardDocument
+    .MuiOutlinedInput-root.Mui-focused
+    .MuiOutlinedInput-notchedOutline {
+    border-color: var(--accent);
+}
+
+body.dashboardDocument .MuiInputLabel-root.Mui-focused,
+body.dashboardDocument .MuiFormLabel-root.Mui-focused {
+    color: var(--accent-hover);
+}
+
+/* Checkboxes, radios, switches — checked = accent */
+body.dashboardDocument .MuiCheckbox-root.Mui-checked,
+body.dashboardDocument .MuiRadio-root.Mui-checked,
+body.dashboardDocument .MuiSwitch-switchBase.Mui-checked {
+    color: var(--accent-hover);
+}
+
+body.dashboardDocument .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track {
+    background-color: var(--accent);
+}
+
+/* Tabs — washi selected label, vermillion underline (like the header tabs) */
+body.dashboardDocument .MuiTab-root {
+    color: var(--text-muted);
+}
+
+body.dashboardDocument .MuiTab-root.Mui-selected {
+    color: var(--text);
+}
+
+body.dashboardDocument .MuiTabs-indicator {
+    background-color: var(--accent);
+}
+
+/* Progress bars & spinners (scheduled tasks, library scan) */
+body.dashboardDocument .MuiLinearProgress-root {
+    background-color: rgba(var(--accent-rgb), 0.22);
+}
+
+body.dashboardDocument .MuiLinearProgress-bar {
+    background-color: var(--accent);
+}
+
+body.dashboardDocument .MuiCircularProgress-root {
+    color: var(--accent-hover);
+}
+
+/* Table hairlines (users, API keys, activity) from the shared token */
+body.dashboardDocument .MuiTableCell-root {
+    border-bottom-color: var(--divider);
+}
+
+/* Chips and info alerts pick up the accent instead of MUI blue */
+body.dashboardDocument .MuiChip-colorPrimary {
+    background-color: var(--accent);
+    color: var(--on-accent);
+}
+
+body.dashboardDocument .MuiAlert-standardInfo {
+    background-color: rgba(var(--accent-rgb), 0.16);
+    color: var(--text);
+}
+
+body.dashboardDocument .MuiAlert-standardInfo .MuiAlert-icon {
+    color: var(--accent-hover);
+}
+
+/* Legacy dashboard panels on pages not yet ported to MUI */
+html .paperList,
+html .visualCardBox {
+    background: var(--surface);
+}
+
+/* ============================================================================
+   15. LOGIN PAGE — a hanging scroll (kakemono), stamped with a hanko seal
+   ----------------------------------------------------------------------------
+   Written for the 10.10/10.11 login view (#loginPage). The page node is an
+   absolutely-positioned plane whose content wrapper carries margin-auto-y —
+   block layout ignores auto vertical margins, so stock just parks the form
+   at the top. Making the page a flex column lets that stock class truly
+   center it. The app header is hidden only while the login view is the
+   ACTIVE view: swapped-out views keep a .hide class (viewContainer.js),
+   so the header returns the moment login completes.
+
+   The wrapper becomes a scroll: a vermillion top rail like a torii lintel,
+   a serif wordmark over a gold rule, and a red seal (--seal, default 侍)
+   stamped slightly askew in the top-right corner — the artist's mark.
+   ========================================================================== */
+
+body:has(#loginPage:not(.hide)) .skinHeader {
+    display: none !important;
+}
+
+#loginPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 0 !important; /* stock reserves 4.5em for the hidden header */
+    overflow-y: auto;
+    /* a red sun rising behind the scroll */
+    background: radial-gradient(
+        ellipse 90% 65% at 50% -15%,
+        rgba(var(--accent-rgb), 0.2),
+        transparent 65%
+    );
+}
+
+/* The scroll. The !importants beat .padded-bottom-page's own !important
+   bottom padding (reserved for the music bar — pointless here). */
+#loginPage .padded-bottom-page {
+    position: relative;
+    width: min(30em, 94vw);
+    padding: 2.4em 2.25em 1.5em !important;
+    background: var(--surface);
+    border: 1px solid var(--divider);
+    border-top: 3px solid var(--accent);
+    border-radius: var(--radius);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+}
+
+/* Wordmark above the form, closed with a gold rule like the mounting silk
+   of a scroll. The packaged Jellyfin banner has no stable URL (webpack
+   hashes the asset name every release), so this is text — replace the
+   content string to personalize. */
+#loginPage .padded-bottom-page::before {
+    content: "Jellyfin";
+    display: block;
+    text-align: center;
+    font-size: 1.9em;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--text);
+    margin-bottom: 0.55em;
+    padding-bottom: 0.45em;
+    border-bottom: 1px solid var(--divider);
+}
+
+/* The hanko seal: a small vermillion square stamped slightly askew in the
+   scroll's top-right corner, carrying the --seal character. Purely
+   decorative — change --seal in :root ("" removes the mark). */
+#loginPage .padded-bottom-page::after {
+    content: var(--seal);
+    position: absolute;
+    top: 1em;
+    right: 1em;
+    width: 1.8em;
+    height: 1.8em;
+    display: grid;
+    place-items: center;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-size: 1.05em;
+    line-height: 1;
+    border-radius: 2px;
+    transform: rotate(-4deg);
+    opacity: 0.92;
+    pointer-events: none;
+}
+
+/* "Please sign in" becomes a quiet subtitle under the wordmark (!important
+   beats the inline margin-top on the saved-users variant of the heading) */
+#loginPage h1 {
+    font-size: 1.02em;
+    font-weight: 400;
+    color: var(--text-muted);
+    text-align: center;
+    letter-spacing: 0.06em;
+    margin: 0 0 1.6em !important;
+}
+
+/* Comfortable input fields */
+#loginPage .emby-input {
+    padding: 0.85em 1em;
+}
+
+/* The submit button keeps the vermillion (section 4); every other button
+   on this page (cancel, manual sign-in, Quick Connect, forgot password,
+   change server) becomes a quiet text button */
+#loginPage .emby-button.raised:not(.button-submit) {
+    background: transparent;
+    color: var(--text-muted);
+}
+
+#loginPage .emby-button.raised:not(.button-submit):hover {
+    background: var(--hover);
+    color: var(--text);
+    filter: none;
+}
+
+#loginPage .button-submit {
+    padding-top: 0.9em;
+    padding-bottom: 0.9em;
+}
+
+/* Saved-user tiles: round portraits — the frame comes from .cardBox in
+   section 5 — with a vermillion ring on hover/focus and a plain name
+   below (no footer box) */
+#loginPage #divUsers .cardContent,
+#loginPage #divUsers .cardImageContainer,
+#loginPage #divUsers .cardImage,
+#loginPage #divUsers .cardBox {
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+#loginPage #divUsers .cardBox {
+    border-color: transparent;
+}
+
+#loginPage #divUsers .cardContent {
+    transition: box-shadow 0.12s ease-out;
+}
+
+#loginPage #divUsers .card:hover .cardContent,
+#loginPage #divUsers .card:focus .cardContent {
+    box-shadow: 0 0 0 3px var(--accent);
+}
+
+#loginPage #divUsers .cardFooter {
+    background: transparent !important;
+}
+
+/* Server disclaimer, quiet and centered */
+#loginPage .loginDisclaimer {
+    color: var(--text-muted);
+    font-size: 0.9em;
+    text-align: center;
+}

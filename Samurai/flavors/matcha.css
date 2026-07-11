@@ -1,0 +1,32 @@
+/* ============================================================================
+   SAMURAI FLAVOR — Matcha (抹茶)
+   ----------------------------------------------------------------------------
+   Tea-ceremony green on mossy ink. Gold trim stays.
+   Install (Dashboard → General → Custom CSS) — @import the base theme
+   and this file, in that order:
+       @import url("<where-you-host>/theme.css");
+       @import url("<where-you-host>/flavors/matcha.css");
+   …or paste this file below the full contents of theme.css. The flavor
+   must load AFTER the base so its :root wins. A flavor only re-points
+   the :root tokens; the derived tints (--divider) track --gold-rgb
+   automatically.
+   ========================================================================== */
+
+:root {
+    /* Accent — whisked matcha */
+    --accent: #8aa64f;
+    --accent-rgb: 138, 166, 79;
+    --accent-hover: #a0ba6a; /* matcha, 15% toward white */
+    --accent-pressed: #718a3f; /* matcha, 15% toward black */
+    --on-accent: #141a08;
+
+    /* Neutrals — ink with a moss cast */
+    --bg: #121510;
+    --bg-rgb: 18, 21, 16;
+    --surface: #1a1f17;
+    --surface-high: #262e21;
+
+    /* Text */
+    --text: #e9ecdf;
+    --text-muted: #9aa68b;
+}
