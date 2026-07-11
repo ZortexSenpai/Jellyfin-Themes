@@ -1,0 +1,32 @@
+/* ============================================================================
+   SAKURA FLAVOR — Fuji (藤, wisteria · early summer)
+   ----------------------------------------------------------------------------
+   Hanging wisteria: soft lilac on violet night.
+   Install (Dashboard → General → Custom CSS) — @import the base theme
+   and this file, in that order:
+       @import url("<where-you-host>/theme.css");
+       @import url("<where-you-host>/flavors/fuji.css");
+   …or paste this file below the full contents of theme.css. The flavor
+   must load AFTER the base so its :root wins. A flavor only re-points
+   the :root tokens; the falling petals and every tint track
+   --accent-rgb automatically.
+   ========================================================================== */
+
+:root {
+    /* Accent — wisteria lilac */
+    --accent: #a98bd3;
+    --accent-rgb: 169, 139, 211;
+    --accent-hover: #bba2de; /* lilac, 15% toward white */
+    --accent-pressed: #8f74b6; /* lilac, 15% toward black */
+    --on-accent: #1d1526;
+
+    /* Neutrals — night with a deeper violet cast */
+    --bg: #161320;
+    --bg-rgb: 22, 19, 32;
+    --surface: #201b2e;
+    --surface-high: #2b2440;
+
+    /* Text */
+    --text: #f0ecf6;
+    --text-muted: #a097b0;
+}

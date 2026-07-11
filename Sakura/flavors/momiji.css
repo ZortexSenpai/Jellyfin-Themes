@@ -1,0 +1,33 @@
+/* ============================================================================
+   SAKURA FLAVOR — Momiji (紅葉, maple · autumn)
+   ----------------------------------------------------------------------------
+   Autumn leaf-viewing: maple flame on a warm brown night — the falling
+   petals become falling leaves.
+   Install (Dashboard → General → Custom CSS) — @import the base theme
+   and this file, in that order:
+       @import url("<where-you-host>/theme.css");
+       @import url("<where-you-host>/flavors/momiji.css");
+   …or paste this file below the full contents of theme.css. The flavor
+   must load AFTER the base so its :root wins. A flavor only re-points
+   the :root tokens; the falling petals and every tint track
+   --accent-rgb automatically.
+   ========================================================================== */
+
+:root {
+    /* Accent — maple flame */
+    --accent: #d8704f;
+    --accent-rgb: 216, 112, 79;
+    --accent-hover: #e28a6d; /* flame, 15% toward white */
+    --accent-pressed: #b65b3f; /* flame, 15% toward black */
+    --on-accent: #260f08;
+
+    /* Neutrals — night with an autumn-brown cast */
+    --bg: #1a1410;
+    --bg-rgb: 26, 20, 16;
+    --surface: #241c15;
+    --surface-high: #31261c;
+
+    /* Text */
+    --text: #f2ebe4;
+    --text-muted: #a8988a;
+}

@@ -7,6 +7,7 @@ A collection of custom CSS themes (skins) for the [Jellyfin](https://jellyfin.or
 | [**Plexifin**](Plexifin/) | A Plex-style skin — one flat background plane, dark lavender accent | Catppuccin: Latte, Frappé, Macchiato, Mocha |
 | [**Shellyfin**](Shellyfin/) | A terminal (CLI) skin — monospace type, phosphor glow, CRT scanlines | Amber (VT220), Violet, Ice, Mono |
 | [**Samurai**](Samurai/) | A feudal-Japan skin — sumi-ink lacquer, vermillion accent, gold trim, mincho serif type | Aiiro (indigo), Sakura, Matcha, Kogane (gold) |
+| [**Sakura**](Sakura/) | A night cherry-blossom skin — plum-dark sky, blossom-pink accent, falling petals | Seasonal flowers: Ume, Fuji, Ajisai, Momiji |
 
 Tested against the Jellyfin **10.10 / 10.11** web client. Set your display theme to **Dark** in Jellyfin (Settings → Display) for best results.
 
@@ -35,6 +36,12 @@ Paste an `@import` that pulls the theme from this repo via the [jsDelivr](https:
 
 ```css
 @import url("https://cdn.jsdelivr.net/gh/ZortexSenpai/Jellyfin-Themes@main/Samurai/theme.css");
+```
+
+### Sakura
+
+```css
+@import url("https://cdn.jsdelivr.net/gh/ZortexSenpai/Jellyfin-Themes@main/Sakura/theme.css");
 ```
 
 ## Flavors
@@ -82,6 +89,15 @@ Each theme ships optional color flavors in its `flavors/` folder. A flavor only 
 | Matcha — tea green | `Samurai/flavors/matcha.css` |
 | Kogane — gold on black lacquer | `Samurai/flavors/kogane.css` |
 
+**Sakura** (`Sakura/flavors/`) — the seasons of blossom viewing
+
+| Flavor | Import path |
+|---|---|
+| Ume — plum blossom, late winter | `Sakura/flavors/ume.css` |
+| Fuji — wisteria, early summer | `Sakura/flavors/fuji.css` |
+| Ajisai — hydrangea, rainy season | `Sakura/flavors/ajisai.css` |
+| Momiji — maple, autumn | `Sakura/flavors/momiji.css` |
+
 ## Alternative: paste the CSS directly
 
 Prefer not to depend on a CDN? Open the theme's `theme.css`, copy the whole file, and paste it into the Custom CSS box instead. To add a flavor, paste its contents **below** the base theme.
@@ -93,6 +109,8 @@ All colors live in the `:root` block at the top of each `theme.css` — accent, 
 Shellyfin quick dials: set `--scanline-opacity: 0` to disable the CRT scanline effect, and `--glow: none` to disable the phosphor text glow.
 
 Samurai quick dials: set `--pattern-opacity: 0` to disable the seigaiha wave overlay, and `--seal` to change the character stamped on the login scroll (default `"侍"`; `""` removes it).
+
+Sakura quick dials: set `--petal-opacity: 0` to disable the falling petals (they also pause automatically for users who prefer reduced motion, and hide during video playback).
 
 ## Note on caching
 

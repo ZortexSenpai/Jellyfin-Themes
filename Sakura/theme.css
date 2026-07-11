@@ -1,5 +1,5 @@
 /* ============================================================================
-   SAMURAI — a feudal-Japan skin for Jellyfin
+   SAKURA — a yozakura (night cherry-blossom) skin for Jellyfin
    ----------------------------------------------------------------------------
    Install: Jellyfin Dashboard → General → Custom CSS → paste this whole file.
    (Users should have their theme set to "Dark" in Display settings.)
@@ -7,78 +7,78 @@
 
    Same layout skeleton as Plexifin (pinned sidebar, home rows, pre-play
    detail pages, episode grid, themed dashboard, centered login) — dressed
-   as lacquerware and washi: sumi-ink neutrals with a warm cast, vermillion
-   (shu) accent, gold maki-e hairlines on every frame, mincho serif type,
-   section titles in 「kagi brackets」, hinomaru play buttons, a subtle
-   seigaiha wave overlay and a login page styled as a hanging scroll,
-   stamped with a red hanko seal.
+   for blossom viewing at night: a plum-dark sky, soft sakura-pink accent,
+   petal-round pills and corners, mincho serif display titles marked with
+   a ❀ blossom, moon-gold star ratings, and petals drifting gently down
+   the whole UI (they pause for videos and for reduced-motion users).
 
    All colors are configured in the :root block directly below. Quick
-   dials: --pattern-opacity: 0 kills the seigaiha overlay, --seal sets
-   the character stamped on the login scroll. Other palettes live in
-   flavors/ (aiiro indigo, sakura, matcha, kogane gold) — load one AFTER
-   this file: @import both (base first, flavor second) or paste the
-   flavor below this whole file. See README.md.
+   dials: --petal-opacity: 0 kills the falling petals, --radius /
+   --card-radius harden the soft corners. Other blossoms live in
+   flavors/ (ume plum, fuji wisteria, ajisai hydrangea, momiji maple) —
+   the petals and every tint track the accent, so a flavor re-dyes them
+   automatically. Load one AFTER this file: @import both (base first,
+   flavor second) or paste the flavor below this whole file. See
+   README.md.
    ========================================================================== */
 
 :root {
     /* ------------------------------------------------------------------
-       ACCENT — buttons, links, active states, progress bars, checkboxes.
-       Shu vermillion: torii gates, armor lacing, hanko ink. Keep
-       --accent-rgb in sync (used for tints and transparent overlays)
-       and pick a lighter/darker shade for hover/pressed.
+       ACCENT — buttons, links, active states, progress bars, checkboxes,
+       and the falling petals. Soft sakura pink. Keep --accent-rgb in
+       sync (used for tints, rings and the petals) and pick a lighter/
+       darker shade for hover/pressed.
        ------------------------------------------------------------------ */
-    --accent: #c73e3a; /* shinshu vermillion */
-    --accent-rgb: 199, 62, 58; /* --accent as R, G, B */
-    --accent-hover: #d75a52; /* lighter shade, hover states */
-    --accent-pressed: #a32e2c; /* darker shade, pressed states */
-    --on-accent: #fdf6e3; /* washi text on vermillion */
+    --accent: #e08fa9; /* sakura pink */
+    --accent-rgb: 224, 143, 169; /* --accent as R, G, B */
+    --accent-hover: #eaa8bd; /* lighter shade, hover states */
+    --accent-pressed: #c17490; /* darker shade, pressed states */
+    --on-accent: #2a141c; /* dark plum text on blossom pink */
 
     /* ------------------------------------------------------------------
-       GOLD — the maki-e trim: hairlines/dividers derive from it, star
-       ratings and small flourishes use it directly. Not for buttons.
+       MOON — the second light of a night viewing: star ratings and the
+       multiple-versions badge. Not for buttons.
        ------------------------------------------------------------------ */
-    --gold: #c9a24b;
-    --gold-rgb: 201, 162, 75; /* --gold as R, G, B */
+    --moon: #d9c07a;
+    --moon-rgb: 217, 192, 122; /* --moon as R, G, B */
 
     /* ------------------------------------------------------------------
-       NEUTRALS — sumi ink over lacquered wood: near-black with a warm
-       cast. bg is the single app plane (page + header + sidebar);
-       surface is for floating elements (menus, dialogs, cards);
-       surface-high for interactive fills (inputs, secondary buttons).
+       NEUTRALS — the night sky behind the blossoms: near-black with a
+       plum-violet cast. bg is the single app plane (page + header +
+       sidebar); surface is for floating elements (menus, dialogs,
+       cards); surface-high for interactive fills (inputs, secondary
+       buttons).
        ------------------------------------------------------------------ */
-    --bg: #16120e;
-    --bg-rgb: 22, 18, 14; /* --bg as R, G, B */
-    --surface: #1f1a14;
-    --surface-high: #2b241b;
+    --bg: #181320;
+    --bg-rgb: 24, 19, 32; /* --bg as R, G, B */
+    --surface: #221c2d;
+    --surface-high: #2e2640;
 
-    /* Derived — gold-tinted hairlines (every frame in the theme runs
-       through --divider, like gold leaf on lacquer) and washi hovers */
+    /* Derived — blossom-tinted hairlines and hovers */
     --header-bg: var(--bg);
-    --hover: rgba(253, 246, 227, 0.05);
-    --divider: rgba(var(--gold-rgb), 0.24);
+    --hover: rgba(242, 235, 243, 0.05);
+    --divider: rgba(228, 180, 197, 0.14);
 
     /* ------------------------------------------------------------------
-       TEXT — washi paper tones
+       TEXT — moonlit petal tones
        ------------------------------------------------------------------ */
-    --text: #efe6d5;
-    --text-muted: #a3937c;
+    --text: #f2ebf3;
+    --text-muted: #a394a8;
 
     /* ------------------------------------------------------------------
-       JAPANESE DRESSING
+       BLOSSOM DRESSING
        ------------------------------------------------------------------ */
-    --font-serif:
+    --font-display:
         "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP",
         "Noto Serif CJK JP", "Source Han Serif JP", Georgia,
-        "Times New Roman", serif;
-    --pattern-opacity: 0.04; /* seigaiha wave overlay; 0 disables */
-    --seal: "侍"; /* character on the login scroll's hanko seal */
+        "Times New Roman", serif; /* titles only — body text stays sans */
+    --petal-opacity: 0.4; /* falling petals; 0 disables */
 
     /* ------------------------------------------------------------------
-       SHAPE & LAYOUT
+       SHAPE & LAYOUT — petal-soft
        ------------------------------------------------------------------ */
-    --radius: 2px; /* buttons, inputs, sidebar items */
-    --card-radius: 2px; /* posters / cards */
+    --radius: 8px; /* buttons, inputs, dialogs */
+    --card-radius: 10px; /* posters / cards */
     --detail-poster-width: 18vw; /* poster size on detail pages
                                              (section 12). Stock is 25vw.
                                              KEEP THIS IN vw — the whole stock
@@ -98,25 +98,28 @@
 }
 
 /* ============================================================================
-   1. BASE & BACKGROUND — mincho serif everywhere, seigaiha wave overlay
+   1. BASE & BACKGROUND — night sky, serif display titles, falling petals
    ========================================================================== */
-
-/* The mincho serif, everywhere — EXCEPT the icon font, whose glyphs are
-   ligature names rendered through "Material Icons" and would otherwise
-   appear as literal text */
-*:not(.material-icons) {
-    font-family: var(--font-serif) !important;
-}
 
 html {
     color: var(--text);
+}
+
+/* Display serif on the big type only; everything else keeps the stock
+   sans so body copy stays crisp at small sizes */
+.pageTitle,
+.sectionTitle,
+.itemName,
+.parentName,
+.formDialogHeaderTitle {
+    font-family: var(--font-display);
 }
 
 .backgroundContainer {
     background: var(--bg) !important;
 }
 
-/* Item detail pages: dim the backdrop art like ink wash over a print */
+/* Item detail pages: dim the backdrop art into the night */
 .backgroundContainer.withBackdrop {
     background: linear-gradient(
         rgba(var(--bg-rgb), 0.86),
@@ -124,44 +127,79 @@ html {
     ) !important;
 }
 
-/* Seigaiha (blue-ocean wave) pattern across the whole UI — overlapping
-   scallops of three concentric arcs, drawn as two offset layers of
-   radial-gradient rings in washi ink (set --pattern-opacity: 0 to turn
-   off). Fixed, click-through, and removed while a video plays
-   (body.hide-scroll) so the movie itself stays clean. */
+/* Falling petals across the whole UI (set --petal-opacity: 0 to turn
+   off). Five repeating layers, one petal per tile, each layer drifting
+   at its own speed and sideways direction; every keyframe offset is an
+   exact multiple of that layer's tile size, so the loop is seamless.
+   The petals are tinted from --accent-rgb — flavors re-dye them
+   automatically. Fixed, click-through, and removed while a video plays
+   (body.hide-scroll) so the movie itself stays clean; the drift pauses
+   for users who prefer reduced motion. */
 body::after {
     content: "";
     position: fixed;
     inset: 0;
     z-index: 99999;
     pointer-events: none;
-    opacity: var(--pattern-opacity);
-    --wave-line: rgba(239, 230, 213, 0.9);
+    opacity: var(--petal-opacity);
     background-image:
         radial-gradient(
-            circle 24px at 50% 0,
-            transparent 9px,
-            var(--wave-line) 9px 10.5px,
-            transparent 10.5px 16px,
-            var(--wave-line) 16px 17.5px,
-            transparent 17.5px 22.5px,
-            var(--wave-line) 22.5px 24px,
-            transparent 24px
+            6px 5px at 40px 60px,
+            rgba(var(--accent-rgb), 0.9) 40%,
+            rgba(var(--accent-rgb), 0) 70%
         ),
         radial-gradient(
-            circle 24px at 50% 0,
-            transparent 9px,
-            var(--wave-line) 9px 10.5px,
-            transparent 10.5px 16px,
-            var(--wave-line) 16px 17.5px,
-            transparent 17.5px 22.5px,
-            var(--wave-line) 22.5px 24px,
-            transparent 24px
+            4px 3px at 120px 30px,
+            rgba(var(--accent-rgb), 0.7) 40%,
+            rgba(var(--accent-rgb), 0) 70%
+        ),
+        radial-gradient(
+            5px 4px at 200px 90px,
+            rgba(var(--accent-rgb), 0.8) 40%,
+            rgba(var(--accent-rgb), 0) 70%
+        ),
+        radial-gradient(
+            3px 2.5px at 70px 10px,
+            rgba(var(--accent-rgb), 0.6) 40%,
+            rgba(var(--accent-rgb), 0) 70%
+        ),
+        radial-gradient(
+            14px 12px at 160px 50px,
+            rgba(var(--accent-rgb), 0.25) 0%,
+            rgba(var(--accent-rgb), 0) 60%
         );
-    background-size: 48px 24px;
-    background-position:
-        0 0,
-        24px 12px;
+    background-size:
+        260px 340px,
+        300px 420px,
+        340px 380px,
+        220px 300px,
+        420px 560px;
+    animation: sakura-fall 90s linear infinite;
+}
+
+@keyframes sakura-fall {
+    from {
+        background-position:
+            0 0,
+            0 0,
+            0 0,
+            0 0,
+            0 0;
+    }
+    to {
+        background-position:
+            260px 680px,
+            -300px 840px,
+            340px 1140px,
+            -220px 600px,
+            420px 1120px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body::after {
+        animation: none;
+    }
 }
 
 body.hide-scroll::after {
@@ -181,8 +219,9 @@ a[is="emby-linkbutton"]:not(.raised):not(.navMenuOption),
 }
 
 /* ============================================================================
-   2. TOP BAR (header) — solid, exact same tone as the page, finished with a
-   gold hairline underneath like the edge of a lacquered tray
+   2. TOP BAR (header) — solid, exact same tone as the page: it reads as one
+   surface with the content and simply cuts content off as it scrolls under.
+   The active tab sits in a blossom-pink petal pill.
    ========================================================================== */
 
 .skinHeader,
@@ -192,12 +231,11 @@ a[is="emby-linkbutton"]:not(.raised):not(.navMenuOption),
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     color: var(--text);
-    border-bottom: 1px solid var(--divider);
 }
 
 .pageTitle {
     color: var(--text);
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
 }
 
 /* Stock Jellyfin gives the header bar NO horizontal padding below 1600px
@@ -209,12 +247,11 @@ a[is="emby-linkbutton"]:not(.raised):not(.navMenuOption),
     padding: 0.54em 1em;
 }
 
-/* Header tabs (Movies / Suggestions / Genres …) — the active one gets a
-   vermillion brush-stroke underline */
+/* Header tabs (Movies / Suggestions / Genres …) */
 .emby-tab-button {
     color: var(--text-muted);
     opacity: 1;
-    letter-spacing: 0.05em;
+    border-radius: 999px;
 }
 
 .emby-tab-button:hover {
@@ -224,13 +261,13 @@ a[is="emby-linkbutton"]:not(.raised):not(.navMenuOption),
 .emby-tab-button-active,
 .emby-tab-button-active:hover {
     color: var(--text) !important;
-    box-shadow: inset 0 -2px 0 var(--accent);
+    background: rgba(var(--accent-rgb), 0.18);
+    box-shadow: none;
 }
 
 /* ============================================================================
-   3. SIDEBAR (drawer) — the selected item gets a vermillion tint and a
-   brush-stroke bar on its left edge, like a banner marked with red ink.
-   As an overlay (narrow screens) it floats on --surface; pinned
+   3. SIDEBAR (drawer) — petal-pill items; the active one gets a blossom
+   tint. As an overlay (narrow screens) it floats on --surface; pinned
    (section 10) it sits directly on the page background.
    ========================================================================== */
 
@@ -240,11 +277,11 @@ a[is="emby-linkbutton"]:not(.raised):not(.navMenuOption),
 
 /* Stock forces margin: 0 and border-radius: 0 on nav items with
    !important (librarybrowser.scss), and Jellyfin's CSS loads after this
-   file — the html prefix + !important is needed for the inset and the
-   rounding to apply (see note in section 6) */
+   file — the html prefix + !important is needed for the petal pill to
+   inset and round (see note in section 6) */
 html .navMenuOption {
     margin: 0.1em 0.75em !important;
-    border-radius: var(--radius) !important;
+    border-radius: 999px !important;
     color: var(--text-muted);
 }
 
@@ -255,8 +292,7 @@ html .navMenuOption {
 
 .navMenuOption-selected,
 .navMenuOption-selected:hover {
-    background: rgba(var(--accent-rgb), 0.16) !important;
-    box-shadow: inset 3px 0 0 var(--accent);
+    background: rgba(var(--accent-rgb), 0.2) !important;
     color: var(--text) !important;
 }
 
@@ -269,26 +305,25 @@ html .navMenuOption {
     font-size: 0.8em;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.1em;
 }
 
 /* ============================================================================
    4. BUTTONS
    ========================================================================== */
 
-/* Raised (secondary) buttons — lacquered wood */
+/* Raised (secondary) buttons */
 .emby-button.raised {
     background: var(--surface-high);
     color: var(--text);
     border-radius: var(--radius);
-    letter-spacing: 0.04em;
 }
 
 .emby-button.raised:hover {
     filter: brightness(1.15);
 }
 
-/* Primary / submit buttons → vermillion */
+/* Primary / submit buttons → blossom pink */
 .emby-button.raised.button-submit,
 .button-submit {
     background: var(--accent) !important;
@@ -326,11 +361,11 @@ html .navMenuOption {
     color: var(--accent-hover);
 }
 
-/* Detail page action row — CIRCULAR icon buttons; Play becomes a hinomaru,
-   the red sun disc. Stock styles force their own padding with !important,
-   so the circle is sized explicitly (fixed width/height, padding 0); the
-   html prefix outranks theme.css, which Jellyfin loads AFTER this custom
-   CSS (see note in section 6). */
+/* Detail page action row — CIRCULAR icon buttons, Play as a full blossom.
+   Stock styles force their own padding with !important, so the circle is
+   sized explicitly (fixed width/height, padding 0); the html prefix
+   outranks theme.css, which Jellyfin loads AFTER this custom CSS
+   (see note in section 6). */
 html .detailButton {
     background: var(--surface-high);
     color: var(--text);
@@ -365,19 +400,12 @@ html .emby-button.buttonActive {
 }
 
 /* ============================================================================
-   5. CARDS / POSTERS — framed prints: a gold hairline that brightens on
-   hover, like maki-e trim catching the light
+   5. CARDS / POSTERS — soft rounded corners, hover overlay with a blossom
+   play button and a faint pink bloom around the card
    ========================================================================== */
 
 .cardBox {
     border-radius: var(--card-radius);
-    border: 1px solid var(--divider);
-    background: var(--surface);
-    transition: border-color 0.12s ease-out;
-}
-
-.cardBox:hover {
-    border-color: rgba(var(--gold-rgb), 0.55);
 }
 
 .cardImageContainer,
@@ -388,7 +416,18 @@ html .emby-button.buttonActive {
     border-radius: var(--card-radius);
 }
 
-/* Hover overlay: darken bottom, hinomaru play button */
+/* Hovering a card blooms a faint pink glow around the ARTWORK only — a
+   shadow on .cardBox would outline the transparent footer area below
+   the artwork too */
+.cardImageContainer {
+    transition: box-shadow 0.15s ease-out;
+}
+
+.card:hover .cardImageContainer {
+    box-shadow: 0 6px 24px rgba(var(--accent-rgb), 0.22);
+}
+
+/* Hover overlay: darken bottom, blossom play button */
 .cardOverlayContainer {
     border-radius: var(--card-radius);
     background: linear-gradient(rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.75) 100%);
@@ -421,49 +460,49 @@ html .emby-button.buttonActive {
     color: var(--text-muted) !important;
 }
 
-/* Watched checkmark / episode count — round vermillion seals */
+/* Watched checkmark / episode count — round blossom badges */
 .playedIndicator,
 .countIndicator {
     background: var(--accent) !important;
     color: var(--on-accent) !important;
 }
 
-/* Multiple-versions count (top-left of a card) — stock paints it blue;
-   gilded here so it doesn't read as a second watched seal */
-.mediaSourceIndicator {
-    background: var(--gold) !important;
-    color: var(--bg) !important;
-}
-
-/* Tiles without artwork (cast & crew, fresh libraries) — stock assigns
-   one of five bright random colors; re-dyed in muted traditional
-   pigments: indigo, plum, bengara rust, pine, ochre. The html prefix
-   outranks Jellyfin's runtime theme.css (see note in section 6). */
-html .defaultCardBackground1 {
-    background-color: #33566b; /* ai — indigo */
-}
-
-html .defaultCardBackground2 {
-    background-color: #5c4a63; /* murasaki — plum */
-}
-
-html .defaultCardBackground3 {
-    background-color: #8f3e2e; /* bengara — iron rust */
-}
-
-html .defaultCardBackground4 {
-    background-color: #4e6b48; /* matsuba — pine needle */
-}
-
-html .defaultCardBackground5 {
-    background-color: #8a6d2f; /* ōdo — ochre */
-}
-
 .itemProgressBarForeground {
     background-color: var(--accent) !important;
 }
 
-/* Section headings — full bracket treatment lives in section 11 */
+/* Multiple-versions count (top-left of a card) — stock paints it blue;
+   moonlit here so it doesn't read as a second watched badge */
+.mediaSourceIndicator {
+    background: var(--moon) !important;
+    color: var(--bg) !important;
+}
+
+/* Tiles without artwork (cast & crew, fresh libraries) — stock assigns
+   one of five bright random colors; re-dyed in muted spring tones:
+   wisteria, plum, peach, young leaf, dusk blue. The html prefix
+   outranks Jellyfin's runtime theme.css (see note in section 6). */
+html .defaultCardBackground1 {
+    background-color: #6b5b8e; /* fuji — wisteria */
+}
+
+html .defaultCardBackground2 {
+    background-color: #8e5468; /* ume — plum */
+}
+
+html .defaultCardBackground3 {
+    background-color: #b0705f; /* momo — peach */
+}
+
+html .defaultCardBackground4 {
+    background-color: #5d7a52; /* wakaba — young leaf */
+}
+
+html .defaultCardBackground5 {
+    background-color: #4e6b84; /* tasogare — dusk blue */
+}
+
+/* Section headings — full blossom treatment lives in section 11 */
 .sectionTitle {
     color: var(--text);
 }
@@ -544,7 +583,7 @@ input[is="emby-slider"]::-moz-range-thumb {
 }
 
 /* ============================================================================
-   7. DIALOGS, MENUS, LISTS — floating lacquer trays with gold edges
+   7. DIALOGS, MENUS, LISTS — soft floating surfaces under the blossoms
    ========================================================================== */
 
 .dialog,
@@ -552,7 +591,7 @@ input[is="emby-slider"]::-moz-range-thumb {
     background: var(--surface) !important;
     border: 1px solid var(--divider);
     border-radius: calc(var(--radius) * 2);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
 }
 
 .formDialogHeader:not(.formDialogHeader-clear) {
@@ -817,7 +856,6 @@ body.dashboardDocument .MuiAppBar-root {
     background-color: var(--bg) !important;
     background-image: none !important;
     box-shadow: none !important;
-    border-bottom: 1px solid var(--divider) !important;
 }
 
 body.dashboardDocument .MuiDrawer-paper {
@@ -839,35 +877,28 @@ body.dashboardDocument .MuiDrawer-paper {
 }
 
 /* ============================================================================
-   11. HOME PAGE ROWS — section titles in 「kagi brackets」, round scroll
-   arrows, vermillion progress
+   11. HOME PAGE ROWS — ❀-marked section titles, round scroll arrows,
+   blossom progress
    ========================================================================== */
 
-/* Section titles: mincho semibold with generous tracking */
+/* Section titles: mincho display serif, marked with a small blossom.
+   The mark is scoped to .sectionTitle-cards (card-row headers on home,
+   library and detail pages) so plain settings headings stay unadorned. */
 .sectionTitle {
     font-size: 1.12em;
     font-weight: 600;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.03em;
 }
 
-/* Card-row titles are set in vermillion kagi brackets: 「Continue Watching」.
-   Scoped to .sectionTitle-cards (card-row headers on home, library and
-   detail pages) so plain settings headings stay unadorned. The CJK open
-   bracket carries its whitespace on the LEFT of the glyph — the negative
-   margin pulls it back so the visible stroke lines up with the row edge
-   and the title text doesn't drift right of the cards below it. */
 .sectionTitle.sectionTitle-cards::before {
-    content: "「";
+    content: "❀";
     color: var(--accent);
-    margin-left: -0.45em;
+    font-size: 0.75em;
+    margin-right: 0.5em;
+    vertical-align: 0.1em;
 }
 
-.sectionTitle.sectionTitle-cards::after {
-    content: "」";
-    color: var(--accent);
-}
-
-/* Clickable section titles stay washi-white (they are links) — the chevron
+/* Clickable section titles stay petal-white (they are links) — the chevron
    carries the hover affordance instead */
 a[is="emby-linkbutton"].sectionTitleTextButton,
 a[is="emby-linkbutton"].sectionTitleTextButton .sectionTitle {
@@ -944,7 +975,7 @@ a[is="emby-linkbutton"].sectionTitleTextButton .sectionTitle {
     pointer-events: none;
 }
 
-/* Continue Watching: thin vermillion progress line over the bottom edge of
+/* Continue Watching: thin blossom progress line over the bottom edge of
    the thumbnail (foreground color is set in section 5), on a soft fade */
 .itemProgressBar {
     height: 4px;
@@ -957,12 +988,12 @@ a[is="emby-linkbutton"].sectionTitleTextButton .sectionTitle {
 }
 
 /* ============================================================================
-   12. ITEM DETAIL PAGES (movies / series) — pre-play layout, gold-framed
-   poster, gold star ratings
+   12. ITEM DETAIL PAGES (movies / series) — pre-play layout, moon-gold
+   star ratings
    ========================================================================== */
 
 /* Hero backdrop: fade the artwork into the page background, so the title
-   block sits on a smooth ink gradient instead of a hard image edge */
+   block sits on a smooth night gradient instead of a hard image edge */
 .itemBackdrop::after {
     content: "";
     position: absolute;
@@ -981,14 +1012,14 @@ a[is="emby-linkbutton"].sectionTitleTextButton .sectionTitle {
     z-index: 1;
 }
 
-/* Poster: framed like every print, floating on a deep shadow */
+/* Poster: slightly larger radius + a real shadow so it floats over the
+   hero art */
 .detailImageContainer .cardImageContainer,
 .detailImageContainer .cardBox {
     border-radius: calc(var(--card-radius) + 2px);
 }
 
 .detailImageContainer .cardImageContainer {
-    border: 1px solid var(--divider);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
 }
 
@@ -1017,10 +1048,10 @@ html.layout-desktop .itemName {
     white-space: normal;
 }
 
-/* Title block: heavy mincho title, everything secondary in muted washi */
+/* Title block: heavy mincho title, everything secondary in muted tones */
 .itemName {
     font-weight: 700;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
 }
 
 .parentName,
@@ -1029,17 +1060,16 @@ html.layout-desktop .itemName {
     color: var(--text-muted);
 }
 
-/* Quality badges (4K, HDR, CC …) as quiet gold-edged chips */
+/* Quality badges (4K, HDR, CC …) as quiet chips */
 html .mediaInfoText {
-    background: transparent;
+    background: var(--surface-high);
     color: var(--text-muted);
-    border: 1px solid var(--divider);
-    border-radius: var(--radius);
+    border-radius: calc(var(--radius) / 2);
 }
 
-/* The star rating is gilded, not Jellyfin-yellow */
+/* The star rating glows moon-gold over the night sky */
 .starIcon {
-    color: var(--gold);
+    color: var(--moon);
 }
 
 .tagline {
@@ -1047,9 +1077,9 @@ html .mediaInfoText {
     font-style: italic;
 }
 
-/* Overview: comfortable reading measure — serif likes a little more air */
+/* Overview: comfortable reading measure */
 .overview {
-    line-height: 1.75;
+    line-height: 1.65;
     max-width: 70ch;
 }
 
@@ -1111,8 +1141,8 @@ html .mediaInfoText {
     }
 
     /* Thumbnail: full card width at 16:9 (stock sizes it in vw for a list
-       row), framed like every print; the resume progress bar and played
-       badge clip inside the frame */
+       row), rounded like every other card; the resume progress bar and
+       played badge clip inside the rounded corners */
     html.layout-desktop
         .childrenItemsContainer:has(
             > .listItem[data-type="Episode"]:not([data-playlistitemid])
@@ -1123,7 +1153,6 @@ html .mediaInfoText {
         height: auto !important;
         aspect-ratio: 16 / 9;
         margin: 0 !important;
-        border: 1px solid var(--divider);
         border-radius: var(--card-radius);
         overflow: hidden;
     }
@@ -1199,8 +1228,7 @@ html .mediaInfoText {
    classes (.MuiButton-*, .Mui-checked, …) are targeted, and only colors
    and radii are touched — never sizing — so MUI version bumps degrade
    gracefully. Older dashboard pages still built from classic emby-*
-   controls are already covered by sections 4, 6 and 7. The serif font
-   comes from the universal rule in section 1.
+   controls are already covered by sections 4, 6 and 7.
 
    MUI injects its styles at runtime, AFTER this file — every rule here
    outranks them by specificity (body. prefix), with !important only
@@ -1221,20 +1249,19 @@ body.dashboardDocument .MuiDialog-paper {
     border-radius: calc(var(--radius) * 2);
 }
 
-/* Sidebar items: same rounded row + vermillion selected state as the
+/* Sidebar items: same petal pills + blossom-tinted selected state as the
    main app's sidebar (section 3) */
 body.dashboardDocument .MuiDrawer-paper .MuiListItemButton-root {
     margin: 0.1em 0.75em;
-    border-radius: var(--radius);
+    border-radius: 999px;
 }
 
 body.dashboardDocument .MuiListItemButton-root.Mui-selected,
 body.dashboardDocument .MuiMenuItem-root.Mui-selected {
-    background-color: rgba(var(--accent-rgb), 0.16) !important;
-    box-shadow: inset 3px 0 0 var(--accent);
+    background-color: rgba(var(--accent-rgb), 0.2) !important;
 }
 
-/* Buttons — primary actions in vermillion, secondary emphasis stays quiet */
+/* Buttons — primary actions in blossom pink, secondary emphasis quiet */
 body.dashboardDocument .MuiButton-root {
     border-radius: var(--radius);
 }
@@ -1297,7 +1324,7 @@ body.dashboardDocument .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track {
     background-color: var(--accent);
 }
 
-/* Tabs — washi selected label, vermillion underline (like the header tabs) */
+/* Tabs — petal-white selected label, blossom underline */
 body.dashboardDocument .MuiTab-root {
     color: var(--text-muted);
 }
@@ -1350,7 +1377,7 @@ html .visualCardBox {
 }
 
 /* ============================================================================
-   15. LOGIN PAGE — a hanging scroll (kakemono), stamped with a hanko seal
+   15. LOGIN PAGE — an evening under the blossoms
    ----------------------------------------------------------------------------
    Written for the 10.10/10.11 login view (#loginPage). The page node is an
    absolutely-positioned plane whose content wrapper carries margin-auto-y —
@@ -1360,9 +1387,10 @@ html .visualCardBox {
    ACTIVE view: swapped-out views keep a .hide class (viewContainer.js),
    so the header returns the moment login completes.
 
-   The wrapper becomes a scroll: a vermillion top rail like a torii lintel,
-   a serif wordmark over a gold rule, and a red seal (--seal, default 侍)
-   stamped slightly askew in the top-right corner — the artist's mark.
+   The card floats under a soft pink bloom, the wordmark is set in the
+   display serif with a blossom-gradient fill, and a large translucent ❀
+   rests in the card's top corner. The global falling petals (section 1)
+   drift over everything.
    ========================================================================== */
 
 body:has(#loginPage:not(.hide)) .skinHeader {
@@ -1375,7 +1403,7 @@ body:has(#loginPage:not(.hide)) .skinHeader {
     align-items: center;
     padding-top: 0 !important; /* stock reserves 4.5em for the hidden header */
     overflow-y: auto;
-    /* a red sun rising behind the scroll */
+    /* soft blossom bloom behind the card */
     background: radial-gradient(
         ellipse 90% 65% at 50% -15%,
         rgba(var(--accent-rgb), 0.2),
@@ -1383,55 +1411,50 @@ body:has(#loginPage:not(.hide)) .skinHeader {
     );
 }
 
-/* The scroll. The !importants beat .padded-bottom-page's own !important
-   bottom padding (reserved for the music bar — pointless here). */
+/* The auth card. The !importants beat .padded-bottom-page's own
+   !important bottom padding (reserved for the music bar — pointless here). */
 #loginPage .padded-bottom-page {
     position: relative;
     width: min(30em, 94vw);
-    padding: 2.4em 2.25em 1.5em !important;
+    padding: 2.25em 2.25em 1.5em !important;
     background: var(--surface);
     border: 1px solid var(--divider);
-    border-top: 3px solid var(--accent);
-    border-radius: var(--radius);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+    border-radius: calc(var(--radius) * 2);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    overflow: hidden; /* clips the corner blossom below */
 }
 
-/* Wordmark above the form, closed with a gold rule like the mounting silk
-   of a scroll. The packaged Jellyfin banner has no stable URL (webpack
-   hashes the asset name every release), so this is text — replace the
-   content string to personalize. */
+/* Wordmark above the form, in the display serif with a blossom-gradient
+   fill. The packaged Jellyfin banner has no stable URL (webpack hashes
+   the asset name every release), so this is text — replace the content
+   string to personalize. */
 #loginPage .padded-bottom-page::before {
     content: "Jellyfin";
     display: block;
     text-align: center;
+    font-family: var(--font-display);
     font-size: 1.9em;
     font-weight: 600;
-    letter-spacing: 0.14em;
-    color: var(--text);
-    margin-bottom: 0.55em;
-    padding-bottom: 0.45em;
-    border-bottom: 1px solid var(--divider);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4em;
+    background: linear-gradient(100deg, var(--accent-hover), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
 }
 
-/* The hanko seal: a small vermillion square stamped slightly askew in the
-   scroll's top-right corner, carrying the --seal character. Purely
-   decorative — change --seal in :root ("" removes the mark). */
+/* A large translucent blossom resting in the card's top-right corner,
+   half-clipped by the card edge — purely decorative */
 #loginPage .padded-bottom-page::after {
-    content: var(--seal);
+    content: "❀";
     position: absolute;
-    top: 1em;
-    right: 1em;
-    width: 1.8em;
-    height: 1.8em;
-    display: grid;
-    place-items: center;
-    background: var(--accent);
-    color: var(--on-accent);
-    font-size: 1.05em;
+    top: -0.35em;
+    right: -0.25em;
+    font-size: 2.6em;
     line-height: 1;
-    border-radius: 2px;
-    transform: rotate(-4deg);
-    opacity: 0.92;
+    color: rgba(var(--accent-rgb), 0.3);
+    transform: rotate(18deg);
     pointer-events: none;
 }
 
@@ -1442,7 +1465,6 @@ body:has(#loginPage:not(.hide)) .skinHeader {
     font-weight: 400;
     color: var(--text-muted);
     text-align: center;
-    letter-spacing: 0.06em;
     margin: 0 0 1.6em !important;
 }
 
@@ -1451,9 +1473,9 @@ body:has(#loginPage:not(.hide)) .skinHeader {
     padding: 0.85em 1em;
 }
 
-/* The submit button keeps the vermillion (section 4); every other button
-   on this page (cancel, manual sign-in, Quick Connect, forgot password,
-   change server) becomes a quiet text button */
+/* The submit button keeps the blossom pink (section 4); every other
+   button on this page (cancel, manual sign-in, Quick Connect, forgot
+   password, change server) becomes a quiet text button */
 #loginPage .emby-button.raised:not(.button-submit) {
     background: transparent;
     color: var(--text-muted);
@@ -1470,19 +1492,13 @@ body:has(#loginPage:not(.hide)) .skinHeader {
     padding-bottom: 0.9em;
 }
 
-/* Saved-user tiles: round portraits — the frame comes from .cardBox in
-   section 5 — with a vermillion ring on hover/focus and a plain name
-   below (no footer box) */
+/* Saved-user tiles: round portraits with a blossom ring on hover/focus
+   and a plain name below (no footer box) */
 #loginPage #divUsers .cardContent,
 #loginPage #divUsers .cardImageContainer,
-#loginPage #divUsers .cardImage,
-#loginPage #divUsers .cardBox {
+#loginPage #divUsers .cardImage {
     border-radius: 50%;
     overflow: hidden;
-}
-
-#loginPage #divUsers .cardBox {
-    border-color: transparent;
 }
 
 #loginPage #divUsers .cardContent {

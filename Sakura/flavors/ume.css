@@ -1,0 +1,32 @@
+/* ============================================================================
+   SAKURA FLAVOR — Ume (梅, plum blossom · late winter)
+   ----------------------------------------------------------------------------
+   The first bloom of the year: deeper crimson-pink on red-plum night.
+   Install (Dashboard → General → Custom CSS) — @import the base theme
+   and this file, in that order:
+       @import url("<where-you-host>/theme.css");
+       @import url("<where-you-host>/flavors/ume.css");
+   …or paste this file below the full contents of theme.css. The flavor
+   must load AFTER the base so its :root wins. A flavor only re-points
+   the :root tokens; the falling petals and every tint track
+   --accent-rgb automatically.
+   ========================================================================== */
+
+:root {
+    /* Accent — plum-blossom crimson */
+    --accent: #c65f74;
+    --accent-rgb: 198, 95, 116;
+    --accent-hover: #d47d8f; /* crimson, 15% toward white */
+    --accent-pressed: #a84c60; /* crimson, 15% toward black */
+    --on-accent: #26141a;
+
+    /* Neutrals — night with a red-plum cast */
+    --bg: #1c1418;
+    --bg-rgb: 28, 20, 24;
+    --surface: #271b21;
+    --surface-high: #34242c;
+
+    /* Text */
+    --text: #f3eaed;
+    --text-muted: #a9929b;
+}

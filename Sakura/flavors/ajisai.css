@@ -1,0 +1,32 @@
+/* ============================================================================
+   SAKURA FLAVOR — Ajisai (紫陽花, hydrangea · rainy season)
+   ----------------------------------------------------------------------------
+   Tsuyu rains: hydrangea blue on a cool wet night.
+   Install (Dashboard → General → Custom CSS) — @import the base theme
+   and this file, in that order:
+       @import url("<where-you-host>/theme.css");
+       @import url("<where-you-host>/flavors/ajisai.css");
+   …or paste this file below the full contents of theme.css. The flavor
+   must load AFTER the base so its :root wins. A flavor only re-points
+   the :root tokens; the falling petals and every tint track
+   --accent-rgb automatically (here they fall as rain-blue petals).
+   ========================================================================== */
+
+:root {
+    /* Accent — hydrangea blue */
+    --accent: #7d9fd3;
+    --accent-rgb: 125, 159, 211;
+    --accent-hover: #97b2dd; /* blue, 15% toward white */
+    --accent-pressed: #6785b3; /* blue, 15% toward black */
+    --on-accent: #121a26;
+
+    /* Neutrals — night with a rain-cooled cast */
+    --bg: #131722;
+    --bg-rgb: 19, 23, 34;
+    --surface: #1c212e;
+    --surface-high: #262e40;
+
+    /* Text */
+    --text: #ecf0f6;
+    --text-muted: #94a0b2;
+}
