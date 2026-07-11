@@ -1,0 +1,34 @@
+/* ============================================================================
+   PLEXIFIN FLAVOR — Material (brighter OLED)
+   ----------------------------------------------------------------------------
+   A softer take on the OLED flavor built from the Material color
+   palette: Grey 900 (#212121) plane instead of true black, Deep Purple
+   700 (#512da8) primary. Hover/pressed shades are the palette's own
+   neighboring steps (Deep Purple 500 / 800), text is Grey 200 / 500.
+   Install (Dashboard → General → Custom CSS) — @import the base theme
+   and this file, in that order:
+       @import url("<where-you-host>/theme.css");
+       @import url("<where-you-host>/flavors/material.css");
+   …or paste this file below the full contents of theme.css. The flavor
+   must load AFTER the base so its :root wins. A flavor only re-points
+   the :root tokens; every layout and component rule lives in theme.css.
+   ========================================================================== */
+
+:root {
+    /* Accent — Deep Purple 700 */
+    --accent:         #512da8;
+    --accent-rgb:     81, 45, 168;
+    --accent-hover:   #673ab7;            /* Deep Purple 500 */
+    --accent-pressed: #4527a0;            /* Deep Purple 800 */
+    --on-accent:      #ffffff;
+
+    /* Neutrals — Grey 900 plane, stepped-up surfaces */
+    --bg:             #212121;
+    --bg-rgb:         33, 33, 33;
+    --surface:        #2c2c2c;
+    --surface-high:   #383838;
+
+    /* Text — Grey 200 / Grey 500 */
+    --text:           #eeeeee;
+    --text-muted:     #9e9e9e;
+}
